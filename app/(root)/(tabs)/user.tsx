@@ -1,115 +1,322 @@
-import { View, Text, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Link } from 'expo-router'
-import { FontAwesome } from '@expo/vector-icons'
-import { auth } from '../../../firebase';
-import { updateProfile, signOut } from 'firebase/auth';
+import {
+  View,
+  Text,
+  ScrollView,
+  TextInput,
+  Image,
+  TouchableOpacity,
+  Modal,
+  ImageSourcePropType,
+  FlatList,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Link, useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import { auth } from "../../../firebase";
+import { updateProfile, signOut } from "firebase/auth";
+
+const avatars: { name: string; source: ImageSourcePropType }[] = [
+  {
+    name: "default",
+    source: require("../../../assets/images/avatars/default.png"),
+  },
+  {
+    name: "luffy",
+    source: require("../../../assets/images/avatars/luffy.png"),
+  },
+  {
+    name: "ironman",
+    source: require("../../../assets/images/avatars/ironman.png"),
+  },
+  {
+    name: "starwars",
+    source: require("../../../assets/images/avatars/starwars.png"),
+  },
+  {
+    name: "spiderman",
+    source: require("../../../assets/images/avatars/spiderman.png"),
+  },
+  {
+    name: "mario",
+    source: require("../../../assets/images/avatars/mario.png"),
+  },
+  {
+    name: "aang",
+    source: require("../../../assets/images/avatars/aang.png"),
+  },
+  {
+    name: "mickey",
+    source: require("../../../assets/images/avatars/mickey.png"),
+  },
+  {
+    name: "minion",
+    source: require("../../../assets/images/avatars/minion.png"),
+  },
+  {
+    name: "olaf",
+    source: require("../../../assets/images/avatars/olaf.png"),
+  },
+  {
+    name: "walle",
+    source: require("../../../assets/images/avatars/walle.png"),
+  },
+  {
+    name: "pirate",
+    source: require("../../../assets/images/avatars/pirate.png"),
+  },
+];
 
 const user = () => {
+  const user = auth.currentUser;
 
-    const user = auth.currentUser;
-    const [displayNameInput, setDisplayNameInput] = useState(user?.displayName ?? '');
+  const getAvatarByName = (name: string | null | undefined) => {
+    const avatar = avatars.find((a) => a.name === name);
+    return avatar ? avatar.source : avatars[0].source;
+  };
 
-    const [isEditable, setIsEditable] = useState(false);
+  const [displayNameInput, setDisplayNameInput] = useState(
+    user?.displayName ?? ""
+  );
+  const [photoURL, setPhotoURL] = useState<ImageSourcePropType>(
+    getAvatarByName(user?.photoURL)
+  );
 
-    const handleToggleEdit = () => {
-        setIsEditable((prev) => !prev);
-        setIsVisible((prev) => !prev);
-    };
+  const router = useRouter();
 
-    const handleSettings = () => { };
+  const [isEditable, setIsEditable] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [lastSavedPhotoName, setLastSavedPhotoName] = useState<string>(
+    user?.photoURL || "default"
+  );
 
-    const handleSave = async () => {
-        alert("Saved!");
-        await updateProfile(auth.currentUser!, {
-            displayName: displayNameInput,
-        });
-        setIsEditable(false);
-        setIsVisible(false);
-    };
+  useEffect(() => {
+    const avatarSource = getAvatarByName(user?.photoURL);
+    setPhotoURL(avatarSource);
+    setLastSavedPhotoName(user?.photoURL || "default");
+  }, [user?.photoURL]);
 
-    const handleCancel = () => {
-        setDisplayNameInput(auth.currentUser?.displayName ?? '');
-        setIsEditable(false);
-        setIsVisible(false);
-    }
+  const handleToggleEdit = () => {
+    setIsEditable((prev) => !prev);
+    setIsVisible((prev) => !prev);
+  };
 
-    const handleLogout = async () => {
-        try {
-            await signOut(auth);
-        } catch (error) {
-            console.error('Error signing out:', error);
-        }
-    }
+  const handleSettings = async () => {
+    router.push("/(root)/(modals)/settings");
+  };
 
-    const [isVisible, setIsVisible] = useState(false);
+  const handleSave = async () => {
+    const selectedAvatarName = avatars.find(
+      (avatar) => avatar.source === photoURL
+    )?.name;
 
-    return (
-        <SafeAreaView className='bg-pink-950 h-full'>
-            <FontAwesome className="text-right mb-10 mx-5" color={"white"} size={28} name="cog" onPress={handleSettings} />
+    if (!selectedAvatarName) return;
 
-            <View className="bg-customBg p-5 rounded-lg">
+    alert("Saved!");
 
-                <View className="flex-row justify-between items-center px-5 py-3">
-                    <Image
-                        source={require('../../../assets/images/luffy.png')}
-                        style={{ width: 100, height: 100, borderRadius: 50 }}
-                        resizeMode="contain" />
-                    {!isVisible && (<FontAwesome className="text-right m-3" color={"white"} size={28} name="edit" onPress={handleToggleEdit} />)}
+    await updateProfile(auth.currentUser!, {
+      displayName: displayNameInput,
+      photoURL: selectedAvatarName,
+    });
+    setLastSavedPhotoName(selectedAvatarName);
+    setIsEditable(false);
+    setIsVisible(false);
+  };
 
-                    {isVisible && (
-                        <View className="flex-row justify-between items-center px-5 py-3">
-                            <TouchableOpacity
-                                onPress={handleSave}
-                                className="bg-transparent m-10">
-                                <Text className="text-white text-center">Save</Text>
-                            </TouchableOpacity>
+  const handleCancel = () => {
+    setDisplayNameInput(auth.currentUser?.displayName ?? "");
+    setPhotoURL(getAvatarByName(lastSavedPhotoName));
+    setIsEditable(false);
+    setIsVisible(false);
+  };
 
-                            <TouchableOpacity
-                                onPress={handleCancel}
-                                className="bg-transparent">
-                                <Text className="text-white text-center">Cancel</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-                </View>
+  const handleAvatarSelect = (avatar: {
+    name: string;
+    source: ImageSourcePropType;
+  }) => {
+    setPhotoURL(avatar.source);
+    setIsModalVisible(false);
+  };
 
-                <View className="mb-5">
-                    <Text className='text-zinc-500'>Display Name</Text>
-                    <TextInput
-                        className="bg-transparent text-zinc-500 text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500"
-                        editable={isEditable}
-                        value={displayNameInput}
-                        onChangeText={setDisplayNameInput}
-                        placeholder="Name"
-                        placeholderTextColor="#9CA3AF" />
-                </View>
+  const [isVisible, setIsVisible] = useState(false);
 
-                <View className="mb-5">
-                    <Text className='text-zinc-500'>E-mail</Text>
-                    <TextInput
-                        className="bg-transparent text-zinc-500 text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500"
-                        value={user?.email ?? "E-mail"}
-                        placeholder="Mail"
-                        placeholderTextColor="#9CA3AF" />
-                </View>
+  return (
+    <SafeAreaView className="bg-pink-950 h-full">
+      <FontAwesome
+        className="text-right mb-10 mr-10 mt-5"
+        color={"white"}
+        size={28}
+        name="cog"
+        onPress={handleSettings}
+      />
 
-                <View className="mb-5">
-                    <Text className='text-zinc-500'>User Id</Text>
-                    <TextInput
-                        className="bg-transparent text-zinc-500 text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500"
-                        editable={isEditable}
-                        value={user?.uid ?? "ID"}
-                        placeholder="Phone"
-                        placeholderTextColor="#9CA3AF" />
-                </View>
+      <View className="bg-customBg p-5 rounded-lg mt-10">
+        <View className="flex-row justify-between items-center px-5 py-3">
+          <View style={{ position: "relative" }}>
+            <Image
+              source={photoURL}
+              style={{
+                width: 140,
+                height: 140,
+                borderRadius: 70,
+                top: -90,
+              }}
+              resizeMode="contain"
+            />
+            {/* Camera icon when in edit mode */}
+            {isEditable && (
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  top: "-15%",
+                  left: "47%",
+                  transform: [{ translateX: -20 }, { translateY: -20 }],
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  borderRadius: 20,
+                  padding: 8,
+                }}
+                onPress={() => setIsModalVisible(true)}
+              >
+                <FontAwesome name="camera" size={30} color="white" />
+              </TouchableOpacity>
+            )}
+          </View>
+          {!isVisible && (
+            <FontAwesome
+              className="text-right"
+              style={{
+                top: -40,
+              }}
+              color={"white"}
+              size={28}
+              name="edit"
+              onPress={handleToggleEdit}
+            />
+          )}
 
-                <Link href={"/"} className="font-bold text-center mt-10 text-zinc-500 text-lg underline">Change Password</Link>
-                <Link onPress={handleLogout} href={"../../signin"} className="font-bold text-center mt-10 text-zinc-500 text-lg underline">Logout</Link>
+          {isVisible && (
+            <View
+              className="flex-row justify-between items-center px-5 py-3"
+              style={{ top: -40 }}
+            >
+              <TouchableOpacity
+                onPress={handleSave}
+                className="bg-transparent m-10"
+              >
+                <Text className="text-white text-center">Save</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleCancel}
+                className="bg-transparent"
+              >
+                <Text className="text-white text-center">Cancel</Text>
+              </TouchableOpacity>
             </View>
-        </SafeAreaView>
-    )
-}
+          )}
+        </View>
 
-export default user
+        {/* Avatar Selection Modal */}
+        <Modal
+          visible={isModalVisible}
+          animationType="slide"
+          transparent={true}
+        >
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.8)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontSize: 20, color: "white", marginBottom: 20 }}>
+              Choose an Avatar
+            </Text>
+            <FlatList
+              data={avatars}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => handleAvatarSelect(item)}>
+                  <Image
+                    source={item.source}
+                    style={{
+                      width: 120,
+                      height: 120,
+                      margin: 10,
+                      borderRadius: 60,
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+              numColumns={3}
+            />
+            <TouchableOpacity
+              style={{
+                marginBottom: 100,
+                padding: 10,
+                paddingLeft: 20,
+                paddingRight: 20,
+                backgroundColor: "white",
+                borderRadius: 10,
+              }}
+              onPress={() => setIsModalVisible(false)}
+            >
+              <Text
+                style={{ fontSize: 16, color: "black", fontWeight: "bold" }}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+        <View className="mb-6" style={{ top: -50 }}>
+          <Text className={`${isEditable ? "text-white" : "text-zinc-500"}`}>
+            Display Name
+          </Text>
+          <TextInput
+            className={`bg-transparent ${
+              isEditable ? "text-white" : "text-zinc-500"
+            } text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500`}
+            editable={isEditable}
+            value={displayNameInput}
+            onChangeText={setDisplayNameInput}
+            placeholder="Name"
+            placeholderTextColor="#9CA3AF"
+          />
+        </View>
+
+        <View className="mb-6" style={{ top: -50 }}>
+          <Text className="text-zinc-500">E-mail</Text>
+          <TextInput
+            className="bg-transparent text-zinc-500 text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500"
+            value={user?.email ?? "E-mail"}
+            placeholder="Mail"
+            placeholderTextColor="#9CA3AF"
+          />
+        </View>
+
+        <View className="mb-6" style={{ top: -50 }}>
+          <Text className="text-zinc-500">User Id</Text>
+          <TextInput
+            className="bg-transparent text-zinc-500 text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500"
+            editable={isEditable}
+            value={user?.uid ?? "ID"}
+            placeholder="Phone"
+            placeholderTextColor="#9CA3AF"
+          />
+        </View>
+
+        <Link
+          href={"/"}
+          className="font-semibold text-center mt-28 text-white text-lg underline"
+        >
+          Change Password
+        </Link>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default user;
