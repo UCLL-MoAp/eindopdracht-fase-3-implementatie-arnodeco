@@ -7,6 +7,7 @@ import { getWatchlist, removeFromWatchlist, updateProgress } from '@/app/api/wat
 import { auth } from '@/firebase';
 import { addToFinishedlist, getFinishedlist, removeFromFinishedlist, updateRating } from '@/app/api/finishedListService';
 import { getSeriesWatchlist, removeFromSeriesWatchlist, updateSeriesProgress } from '@/app/api/seriesWatchListService';
+import { addToSeriesFinishedlist, getSeriesFinishedlist, removeFromSeriesFinishedlist, updateSeriesRating } from '@/app/api/seriesFinishedListService';
 
 const list = () => {
     const [selectedContent, setSelectedContent] = useState('movies');
@@ -39,9 +40,9 @@ const list = () => {
                 setFinishedList(movieFinishedList);
             } else {
                 const seriesWatchlist = await getSeriesWatchlist(user?.uid!);
-                console.log("SERIES LOADED:", seriesWatchlist)
+                const seriesFinishedlist = await getSeriesFinishedlist(user?.uid!)
                 setWatchlist(seriesWatchlist);
-                //setFinishedList([]); 
+                setFinishedList(seriesFinishedlist);
             }
         } catch (error) {
             console.error('Error loading lists:', error);
@@ -56,23 +57,46 @@ const list = () => {
         }, [user, selectedContent])
     );
 
-    const handleAddToFinished = async (movie: any) => {
-        const movieToAdd = {
-            movieId: movie.movieId,
-            movieTitle: movie.movieTitle,
-            posterUrl: movie.posterUrl,
-            length: movie.length,
-            length_minutes: movie.length_minutes,
-            rating: 0,
-            dateAdded: movie.dateAdded
+    const handleAddToFinished = async (item: any) => {
+
+        if (selectedContent === 'movies') {
+            const movieToAdd = {
+                movieId: item.movieId,
+                movieTitle: item.movieTitle,
+                posterUrl: item.posterUrl,
+                length: item.length,
+                length_minutes: item.length_minutes,
+                rating: 0,
+                dateAdded: item.dateAdded
+            }
+            try {
+                await addToFinishedlist(user?.uid!, movieToAdd);
+                await removeFromWatchlist(user?.uid!, item.movieId)
+                loadLists();
+            }
+            catch (error) {
+                console.error('Error adding to finished list:', error)
+            }
         }
-        try {
-            await addToFinishedlist(user?.uid!, movieToAdd);
-            await removeFromWatchlist(user?.uid!, movie.movieId)
-            loadLists();
-        }
-        catch (error) {
-            console.error('Error adding to finished list:', error)
+        else {
+            const seriesToAdd = {
+                seriesId: item.seriesId,
+                seriesTitle: item.seriesTitle,
+                posterUrl: item.posterUrl,
+                runtime: item.runtime,
+                seasons: item.seasons,
+                episodesPerSeason: item.episodesPerSeason,
+                rating: 0,
+                dateAdded: item.dateAdded,
+            }
+            try {
+                await addToSeriesFinishedlist(user?.uid!, seriesToAdd);
+                await removeFromSeriesWatchlist(user?.uid!, item.seriesId)
+                loadLists();
+            }
+            catch (error) {
+                console.error('Error adding to finished list:', error)
+            }
         }
     }
 
@@ -95,7 +119,7 @@ const list = () => {
                 await removeFromFinishedlist(user?.uid!, itemId)
             }
             else {
-                //await removeFromSeriesFinishedList(user?.uid!, itemId)
+                await removeFromSeriesFinishedlist(user?.uid!, itemId)
             }
             loadLists();
         }
@@ -117,9 +141,14 @@ const list = () => {
         }
     };
 
-    const handleUpdateRating = async (movieId: string, rating: number) => {
+    const handleUpdateRating = async (itemId: string, rating: number) => {
         try {
-            await updateRating(user?.uid!, movieId, rating)
+            if (selectedContent === 'movies') {
+                await updateRating(user?.uid!, itemId, rating)
+            }
+            else {
+                await updateSeriesRating(user?.uid!, itemId, rating);
+            }
             loadLists()
         } catch (error) {
             console.error('Error updating rating:', error)
@@ -141,7 +170,7 @@ const list = () => {
             if (selectedCategory === 'watching') {
                 await handleUpdateProgress(selectedMovieOrSeries.movieId || selectedMovieOrSeries.seriesId, selectedMovieOrSeries.progress || 0);
             } else {
-                await handleUpdateRating(selectedMovieOrSeries.movieId, currentRating);
+                await handleUpdateRating(selectedMovieOrSeries.movieId || selectedMovieOrSeries.seriesId, currentRating);
             }
             togglePopup(null);
         }
@@ -189,8 +218,26 @@ const list = () => {
                                 </View>
                             </View>
                         )
-                    ) : (
+                    ) : (selectedCategory === 'watching' ? (
                         `Progress: Season ${item.seasonsProgress}, Episode ${item.episodesProgress}`
+                    )
+                        :
+                        (
+                            <View className="items-start mt-1">
+                                <Text className="text-gray-400">{item.runtime}</Text>
+                                <View className="flex-row mt-1">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <FontAwesome
+                                            key={star}
+                                            name={item.rating >= star ? 'star' : 'star-o'}
+                                            size={16}
+                                            color="gold"
+                                            style={{ marginRight: 4 }}
+                                        />
+                                    ))}
+                                </View>
+                            </View>
+                        )
                     )}
                 </Text>
 
@@ -237,16 +284,7 @@ const list = () => {
                                         <Text className="text-gray-400 mb-4">{`Progress: ${Math.floor(
                                             selectedMovieOrSeries.progress / 60
                                         )}h ${selectedMovieOrSeries.progress % 60}m / ${selectedMovieOrSeries.length}`}</Text>
-                                        <TouchableOpacity
-                                            className="bg-indigo-500 rounded-lg py-2 px-4 w-full mb-4"
-                                            onPress={async () => {
-                                                console.log('Mark as Finished');
-                                                await handleAddToFinished(selectedMovieOrSeries);
-                                                togglePopup(null);
-                                            }}
-                                        >
-                                            <Text className="text-white font-bold text-center">Finished</Text>
-                                        </TouchableOpacity>
+
                                     </>
                                 ) : (
                                     <>
@@ -294,6 +332,16 @@ const list = () => {
                                     ))}
                                 </View>
                             )}
+                            <TouchableOpacity
+                                className="bg-indigo-500 rounded-lg py-2 px-4 w-full mb-4"
+                                onPress={async () => {
+                                    console.log('Mark as Finished');
+                                    await handleAddToFinished(selectedMovieOrSeries);
+                                    togglePopup(null);
+                                }}
+                            >
+                                <Text className="text-white font-bold text-center">Finished</Text>
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 className="bg-green-500 rounded-lg py-2 px-4 w-full mb-4"
                                 onPress={handleSave}
