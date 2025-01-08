@@ -7,6 +7,7 @@ import MovieCards from '@/components/movieCards';
 import MovieCard from '@/components/movieCard';
 import { addToWatchlist } from '@/app/api/watchListService';
 import { auth } from '@/firebase';
+import { addToSeriesWatchlist } from '@/app/api/seriesWatchListService';
 
 type Genre = {
     id: number;
@@ -25,7 +26,7 @@ type MovieOrSeries = {
     first_air_date?: string; // For series
     runtime?: string,
     runtime_minutes: number
-    number_of_episodes?: number,
+    number_of_episodes?: number[],
     number_of_seasons?: number,
     genres?: Genre[]
 };
@@ -49,6 +50,11 @@ type ProcessedData = {
     link: string;
     flatrate: { logo_path: string; provider_name: string }[];
 };
+
+type Season = {
+    episode_count: number,
+    season_number: number
+}
 
 
 const Movie = () => {
@@ -82,6 +88,10 @@ const Movie = () => {
                     ? `Seasons: ${response.number_of_seasons} | Episodes: ${response.number_of_episodes}`
                     : 'N/A';
 
+        const episodesPerSeason = response?.seasons
+            .filter((season: Season) => season.season_number > 0) // Exclude "Specials" or invalid seasons
+            .map((season: Season) => season.episode_count);
+
         return {
             id: response.id,
             title: response.title || response.name,
@@ -92,6 +102,8 @@ const Movie = () => {
             release_date: release_year,
             runtime: runtime,
             runtime_minutes: response.runtime,
+            number_of_seasons: response.number_of_seasons,
+            number_of_episodes: episodesPerSeason,
             genres: response.genres || []
         };
     };
@@ -188,8 +200,26 @@ const Movie = () => {
                 console.error('Error adding sample movie:', error);
             }
         }
-        else if (type == "series") {
-
+        else if (type == "tv") {
+            const seriesToAdd = {
+                seriesId: data?.id.toString() ?? "",
+                seriesTitle: data?.title ?? "",
+                posterUrl: data?.poster_path
+                    ? `https://image.tmdb.org/t/p/w300${data?.poster_path}` //Image width/size (w300 in the uri) is smaller for performance gains
+                    : 'https://via.placeholder.com/400?text=No_Poster',
+                runtime: data?.runtime ?? "",
+                seasons: data?.number_of_seasons ?? 0,
+                episodesPerSeason: data?.number_of_episodes ?? [],
+                seasonsProgress: 1,
+                episodesProgress: 0,
+            }
+            console.log("Series Info:", seriesToAdd)
+            try {
+                await addToSeriesWatchlist(user!.uid, seriesToAdd);
+                console.log("Added movie to list:", seriesToAdd.seriesTitle)
+            } catch (error) {
+                console.error('Error adding sample movie:', error);
+            }
         }
     }
 
@@ -261,9 +291,9 @@ const Movie = () => {
                             }}
                         />
                     </View>
-                    <Pressable className="absolute bottom-0 bg-black/60 rounded-md px-5 py-5" onPress={handleAddToList}>
+                    <TouchableOpacity className="absolute bottom-0 bg-black/60 rounded-md px-5 py-5" onPress={handleAddToList}>
                         <Text className="text-white font-bold text-xs">+ Add to list</Text>
-                    </Pressable>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Title */}
