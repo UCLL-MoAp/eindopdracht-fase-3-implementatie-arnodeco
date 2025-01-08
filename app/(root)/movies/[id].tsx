@@ -88,9 +88,12 @@ const Movie = () => {
                     ? `Seasons: ${response.number_of_seasons} | Episodes: ${response.number_of_episodes}`
                     : 'N/A';
 
-        const episodesPerSeason = response?.seasons
-            .filter((season: Season) => season.season_number > 0) // Exclude "Specials" or invalid seasons
-            .map((season: Season) => season.episode_count);
+        let episodesPerSeason;
+        if (response.first_air_date) {
+            episodesPerSeason = response?.seasons
+                .filter((season: Season) => season.season_number > 0) // Exclude "Specials" or invalid seasons
+                .map((season: Season) => season.episode_count);
+        }
 
         return {
             id: response.id,
