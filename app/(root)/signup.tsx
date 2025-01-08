@@ -17,31 +17,27 @@ import {
 import { auth } from "../../firebase";
 import { useRouter } from "expo-router";
 
-const signin = () => {
+const signup = () => {
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   // Handle Sign-Up
   const handleSignUp = async () => {
     try {
-      router.push("/signup");
-    } catch (error) {
-      // Alert.alert('Sign-Up Error', error.message);
-    }
-  };
-
-  // Handle Sign-In
-  const handleSignIn = async () => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      Alert.alert("Logged in", `Welcome back ${userCredential.user.email}`);
-      router.replace("/");
+      Alert.alert(
+        "User created",
+        `User created with email: ${userCredential.user.email}`
+      );
+      router.push("/signin");
     } catch (error) {
-      // Alert.alert('Sign-In Error', error.message);
+      // Alert.alert('Sign-Up Error', error.message);
     }
   };
 
@@ -57,16 +53,36 @@ const signin = () => {
 
         <Image
           source={require("../../assets/images/logo-rerun.png")} // Update the path as per your folder structure
-          style={{ width: 250, height: 160, marginBottom: 40, marginTop: 80 }}
+          style={{ width: 190, height: 160, marginTop: 80 }}
           resizeMode="contain"
         />
 
         {/* Form Section */}
         <View className="w-4/5">
+          {/* Name Input */}
+          <Text className="text-left mb-2">Name</Text>
+          <TextInput
+            className="bg-white p-5 rounded-2xl shadow mb-8"
+            placeholder="Enter Full Name"
+            placeholderTextColor="black"
+            value={name}
+            autoCapitalize="none"
+            onChangeText={(text) => setName(text)}
+          />
+          {/* Username Input */}
+          <Text className="text-left mb-2">Username</Text>
+          <TextInput
+            className="bg-white p-5 rounded-2xl shadow mb-8"
+            placeholder="Enter Username"
+            placeholderTextColor="black"
+            value={username}
+            autoCapitalize="none"
+            onChangeText={(text) => setUsername(text)}
+          />
           {/* Email Input */}
           <Text className="text-left mb-2">Email</Text>
           <TextInput
-            className="bg-white p-5 rounded-2xl shadow mb-6"
+            className="bg-white p-5 rounded-2xl shadow mb-8"
             placeholder="Enter Email"
             placeholderTextColor="black"
             value={email}
@@ -84,32 +100,15 @@ const signin = () => {
             secureTextEntry
             onChangeText={(text) => setPassword(text)}
           />
-
-          {/* Forgot Password */}
-          <TouchableOpacity>
-            <Text className="text-customPurple text-m font-semibold text-center mt-4 mb-4">
-              Forgot Password?
-            </Text>
-          </TouchableOpacity>
         </View>
 
         {/* Buttons */}
         <View className="w-4/5 space-y-4 mt-8">
           <TouchableOpacity
-            onPress={handleSignIn}
+            onPress={handleSignUp}
             className="bg-customPurple p-4 rounded-full items-center"
           >
-            <Text className="text-white text-lg font-bold">Login</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleSignUp}
-            className="items-center"
-            style={{ marginTop: 10 }}
-          >
-            <Text className="text-customPurple text-lg font-bold">
-              Create Account
-            </Text>
+            <Text className="text-white text-lg font-bold">Create Account</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -117,4 +116,4 @@ const signin = () => {
   );
 };
 
-export default signin;
+export default signup;
