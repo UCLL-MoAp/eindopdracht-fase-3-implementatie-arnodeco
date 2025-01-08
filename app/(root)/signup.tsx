@@ -43,7 +43,7 @@ const signup = () => {
 
   return (
     <ImageBackground
-      source={require("../../assets/images/background.png")} // Replace with your image path
+      source={require("../../assets/images/background.png")} 
       style={{ flex: 1, width: "100%", height: "100%" }}
       resizeMode="cover"
       className="flex-1 justify-center items-center"
@@ -52,7 +52,7 @@ const signup = () => {
         {/* Header Section */}
 
         <Image
-          source={require("../../assets/images/logo-rerun.png")} // Update the path as per your folder structure
+          source={require("../../assets/images/logo-rerun.png")}
           style={{ width: 190, height: 160, marginTop: 80 }}
           resizeMode="contain"
         />
