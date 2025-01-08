@@ -12,7 +12,10 @@ import {
   Platform,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { auth } from "../../../firebase";
@@ -74,11 +77,12 @@ const user = () => {
   const insets = useSafeAreaInsets();
 
   const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height - insets.bottom
+  const screenHeight = Dimensions.get("window").height - insets.bottom;
 
-  const itemSize = Platform.OS === "web"
-    ? (screenWidth - 60) / 10
-    : (screenWidth - 40) / 3 - 10;
+  const itemSize =
+    Platform.OS === "web"
+      ? (screenWidth - 60) / 10
+      : (screenWidth - 40) / 3 - 10;
 
   const getAvatarByName = (name: string | null | undefined) => {
     const avatar = avatars.find((a) => a.name === name);
@@ -151,7 +155,7 @@ const user = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
-    <SafeAreaView className="bg-pink-950 h-full" >
+    <SafeAreaView className="bg-pink-950 h-full">
       <FontAwesome
         className="text-right mb-10 mr-10 mt-5"
         color={"white"}
@@ -160,8 +164,8 @@ const user = () => {
         onPress={handleSettings}
       />
 
-      <View className="bg-customBg p-5 rounded-lg mt-10" >
-        <View className="flex-row justify-between items-center px-5 py-3" >
+      <View className="bg-customBg p-5 rounded-lg mt-10">
+        <View className="flex-row justify-between items-center px-5 py-3">
           <View style={{ position: "relative" }}>
             <Image
               source={photoURL}
@@ -286,8 +290,9 @@ const user = () => {
             Display Name
           </Text>
           <TextInput
-            className={`bg-transparent ${isEditable ? "text-white" : "text-zinc-500"
-              } text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500`}
+            className={`bg-transparent ${
+              isEditable ? "text-white" : "text-zinc-500"
+            } text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500`}
             editable={isEditable}
             value={displayNameInput}
             onChangeText={setDisplayNameInput}
@@ -318,8 +323,8 @@ const user = () => {
         </View>
 
         <Link
-          href={"/"}
-          className="font-semibold text-center mt-28 text-white text-lg underline"
+          href={"../(modals)/changepassword"}
+          className="font-semibold text-center mt-2 text-white text-lg underline"
         >
           Change Password
         </Link>
