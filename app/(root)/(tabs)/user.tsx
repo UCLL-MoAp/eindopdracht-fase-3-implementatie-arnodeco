@@ -20,57 +20,7 @@ import { Link, useRouter } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import { auth } from "../../../firebase";
 import { updateProfile, signOut } from "firebase/auth";
-
-const avatars: { name: string; source: ImageSourcePropType }[] = [
-  {
-    name: "default",
-    source: require("../../../assets/images/avatars/default.png"),
-  },
-  {
-    name: "luffy",
-    source: require("../../../assets/images/avatars/luffy.png"),
-  },
-  {
-    name: "ironman",
-    source: require("../../../assets/images/avatars/ironman.png"),
-  },
-  {
-    name: "starwars",
-    source: require("../../../assets/images/avatars/starwars.png"),
-  },
-  {
-    name: "spiderman",
-    source: require("../../../assets/images/avatars/spiderman.png"),
-  },
-  {
-    name: "mario",
-    source: require("../../../assets/images/avatars/mario.png"),
-  },
-  {
-    name: "aang",
-    source: require("../../../assets/images/avatars/aang.png"),
-  },
-  {
-    name: "mickey",
-    source: require("../../../assets/images/avatars/mickey.png"),
-  },
-  {
-    name: "minion",
-    source: require("../../../assets/images/avatars/minion.png"),
-  },
-  {
-    name: "olaf",
-    source: require("../../../assets/images/avatars/olaf.png"),
-  },
-  {
-    name: "walle",
-    source: require("../../../assets/images/avatars/walle.png"),
-  },
-  {
-    name: "pirate",
-    source: require("../../../assets/images/avatars/pirate.png"),
-  },
-];
+import { updateUserInfo, getAvatarUrl } from "@/app/api/userInfoService";
 
 const user = () => {
   const user = auth.currentUser;
@@ -84,30 +34,25 @@ const user = () => {
       ? (screenWidth - 60) / 10
       : (screenWidth - 40) / 3 - 10;
 
-  const getAvatarByName = (name: string | null | undefined) => {
-    const avatar = avatars.find((a) => a.name === name);
-    return avatar ? avatar.source : avatars[0].source;
-  };
-
   const [displayNameInput, setDisplayNameInput] = useState(
     user?.displayName ?? ""
   );
-  const [photoURL, setPhotoURL] = useState<ImageSourcePropType>(
-    getAvatarByName(user?.photoURL)
+  // Change the type to string for the avatar name
+  const [avatarName, setAvatarName] = useState<string>(
+    user?.photoURL || "default"
   );
-
-  const router = useRouter();
-
-  const [isEditable, setIsEditable] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [lastSavedPhotoName, setLastSavedPhotoName] = useState<string>(
+  const [lastSavedAvatarName, setLastSavedAvatarName] = useState<string>(
     user?.photoURL || "default"
   );
 
+  const router = useRouter();
+  const [isEditable, setIsEditable] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
-    const avatarSource = getAvatarByName(user?.photoURL);
-    setPhotoURL(avatarSource);
-    setLastSavedPhotoName(user?.photoURL || "default");
+    setAvatarName(user?.photoURL || "default");
+    setLastSavedAvatarName(user?.photoURL || "default");
   }, [user?.photoURL]);
 
   const handleToggleEdit = () => {
@@ -120,39 +65,58 @@ const user = () => {
   };
 
   const handleSave = async () => {
-    const selectedAvatarName = avatars.find(
-      (avatar) => avatar.source === photoURL
-    )?.name;
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error("No authenticated user found");
+      }
 
-    if (!selectedAvatarName) return;
+      // First update Firestore
+      await updateUserInfo(currentUser.uid, avatarName, displayNameInput);
 
-    alert("Saved!");
+      // Then update Firebase Auth profile
+      await updateProfile(currentUser, {
+        displayName: displayNameInput,
+        photoURL: avatarName,
+      });
 
-    await updateProfile(auth.currentUser!, {
-      displayName: displayNameInput,
-      photoURL: selectedAvatarName,
-    });
-    setLastSavedPhotoName(selectedAvatarName);
-    setIsEditable(false);
-    setIsVisible(false);
+      alert("Saved!");
+      setLastSavedAvatarName(avatarName);
+      setIsEditable(false);
+      setIsVisible(false);
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert("Failed to save profile. Please try again.");
+    }
   };
 
   const handleCancel = () => {
     setDisplayNameInput(auth.currentUser?.displayName ?? "");
-    setPhotoURL(getAvatarByName(lastSavedPhotoName));
+    setAvatarName(lastSavedAvatarName);
     setIsEditable(false);
     setIsVisible(false);
   };
 
-  const handleAvatarSelect = (avatar: {
-    name: string;
-    source: ImageSourcePropType;
-  }) => {
-    setPhotoURL(avatar.source);
+  const handleAvatarSelect = (newAvatarName: string) => {
+    setAvatarName(newAvatarName);
     setIsModalVisible(false);
   };
 
-  const [isVisible, setIsVisible] = useState(false);
+  // Available avatar names array for the modal
+  const availableAvatars = [
+    "default",
+    "luffy",
+    "ironman",
+    "starwars",
+    "spiderman",
+    "mario",
+    "aang",
+    "mickey",
+    "minion",
+    "olaf",
+    "walle",
+    "pirate",
+  ];
 
   return (
     <SafeAreaView className="bg-pink-950 h-full">
@@ -168,7 +132,7 @@ const user = () => {
         <View className="flex-row justify-between items-center px-5 py-3">
           <View style={{ position: "relative" }}>
             <Image
-              source={photoURL}
+              source={getAvatarUrl(avatarName)}
               style={{
                 width: 140,
                 height: 140,
@@ -177,7 +141,6 @@ const user = () => {
               }}
               resizeMode="contain"
             />
-            {/* Camera icon when in edit mode */}
             {isEditable && (
               <TouchableOpacity
                 style={{
@@ -248,12 +211,12 @@ const user = () => {
               Choose an Avatar
             </Text>
             <FlatList
-              data={avatars}
-              keyExtractor={(item, index) => index.toString()}
+              data={availableAvatars}
+              keyExtractor={(item) => item}
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => handleAvatarSelect(item)}>
                   <Image
-                    source={item.source}
+                    source={getAvatarUrl(item)}
                     style={{
                       width: itemSize,
                       height: itemSize,
@@ -285,6 +248,7 @@ const user = () => {
           </View>
         </Modal>
 
+        {/* Rest of your component remains the same */}
         <View className="mb-6" style={{ top: -50 }}>
           <Text className={`${isEditable ? "text-white" : "text-zinc-500"}`}>
             Display Name

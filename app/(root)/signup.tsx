@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase";
 import { useRouter } from "expo-router";
+import { addUserInfo } from "../api/userInfoService";
 
 const signup = () => {
   const [name, setName] = useState("");
@@ -33,6 +34,7 @@ const signup = () => {
 
       // Update the user's displayName
       await updateProfile(user, { displayName: username });
+      await addUserInfo(user.uid, username);
 
       Alert.alert(
         "User created",

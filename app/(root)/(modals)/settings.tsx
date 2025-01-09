@@ -23,6 +23,7 @@ import {
 } from "lucide-react-native";
 import { auth } from "../../../firebase";
 import { signOut } from "firebase/auth";
+import { getAvatarUrl } from "@/app/api/userInfoService";
 
 const settings = () => {
   const router = useRouter();
@@ -36,27 +37,7 @@ const settings = () => {
     }
   };
 
-  const imageMap = {
-    default: require("../../../assets/images/avatars/default.png"),
-    luffy: require("../../../assets/images/avatars/luffy.png"),
-    ironman: require("../../../assets/images/avatars/ironman.png"),
-    starwars: require("../../../assets/images/avatars/starwars.png"),
-    spiderman: require("../../../assets/images/avatars/spiderman.png"),
-    mario: require("../../../assets/images/avatars/mario.png"),
-    aang: require("../../../assets/images/avatars/aang.png"),
-    mickey: require("../../../assets/images/avatars/mickey.png"),
-    minion: require("../../../assets/images/avatars/minion.png"),
-    olaf: require("../../../assets/images/avatars/olaf.png"),
-    walle: require("../../../assets/images/avatars/walle.png"),
-    pirate: require("../../../assets/images/avatars/pirate.png"),
-  };
-  // Get the image URL from the map
-  const imageUrl =
-    user?.photoURL && imageMap[user.photoURL as keyof typeof imageMap]
-      ? imageMap[user.photoURL as keyof typeof imageMap]
-      : "https://via.placeholder.com/150";
-
-  console.log("User's photoURL:", user?.photoURL);
+  const imageUrl = getAvatarUrl(user?.photoURL || "default");
 
   return (
     <SafeAreaView className="flex-1 bg-[#0a0a1f]">
