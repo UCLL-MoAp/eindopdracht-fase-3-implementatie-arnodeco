@@ -222,8 +222,10 @@ const Movie = () => {
             try {
                 await addToSeriesWatchlist(user!.uid, seriesToAdd);
                 console.log("Added movie to list:", seriesToAdd.seriesTitle)
+                Platform.OS === 'web' ? window.alert(`Added ${seriesToAdd.seriesTitle} to watchlist`) : Alert.alert("Succes", `Added ${seriesToAdd.seriesTitle} to watchlist`);
             } catch (error) {
                 console.error('Error adding sample movie:', error);
+                Platform.OS === 'web' ? window.alert(`Adding ${seriesToAdd.seriesTitle} to watchlist failed`) : Alert.alert("Failure", `Adding ${seriesToAdd.seriesTitle} to watchlist failed`);
             }
         }
     }
