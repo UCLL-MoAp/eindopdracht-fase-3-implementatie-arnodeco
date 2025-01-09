@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, FlatList, Modal } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, Modal, Platform } from 'react-native'
 import Slider from '@react-native-community/slider';
 import React, { useCallback, useEffect, useState } from 'react'
 import { FontAwesome } from '@expo/vector-icons';
@@ -185,10 +185,10 @@ const list = () => {
     };
 
     const renderMovieOrSeriesItem = ({ item }: { item: any }) => (
-        <View className="flex-row my-3">
+        <View className={`flex-row my-3 ${Platform.OS === "web" ? "m-56 4xl:w-2/6 mx-auto" : ""}`}>
 
             <Image
-                className="w-32 h-48 border border-white"
+                className={`w-32 h-48 border border-white ${Platform.OS === "web" ? "3xl:h-132 3xl:w-88 h-96 w-64" : ""}`}
                 source={{ uri: item.posterUrl }}
                 resizeMode="cover"
             />
@@ -269,8 +269,8 @@ const list = () => {
                     animationType="fade"
                     onRequestClose={() => togglePopup(null)}
                 >
-                    <View className="flex-1 bg-black/50 justify-center items-center">
-                        <View className="bg-customBg p-4 rounded-lg w-4/5 items-center">
+                    <View className={`flex-1 bg-black/50 justify-center items-center`}>
+                        <View className={`bg-customBg p-4 rounded-lg w-4/5 items-center ${Platform.OS === 'web' ? "w-64" : ""}`}>
                             <Text className="text-white text-lg font-bold mb-4">{selectedMovieOrSeries.movieTitle || selectedMovieOrSeries.seriesTitle}</Text>
                             {selectedCategory === 'watching' ? (
                                 selectedContent === 'movies' ? (
@@ -340,40 +340,47 @@ const list = () => {
                                     ))}
                                 </View>
                             )}
-                            <TouchableOpacity
-                                className="bg-indigo-500 rounded-lg py-2 px-4 w-full mb-4"
-                                onPress={async () => {
-                                    console.log('Mark as Finished');
-                                    await handleAddToFinished(selectedMovieOrSeries);
-                                    togglePopup(null);
-                                }}
-                            >
-                                <Text className="text-white font-bold text-center">Finished</Text>
-                            </TouchableOpacity>
+                            {selectedCategory === "watching" ? (
+
+                                <TouchableOpacity
+                                    className="bg-indigo-500 rounded-lg py-2 px-4 w-full mb-4"
+                                    onPress={async () => {
+                                        console.log('Mark as Finished');
+                                        await handleAddToFinished(selectedMovieOrSeries);
+                                        togglePopup(null);
+                                    }}
+                                >
+                                    <Text className="text-white font-bold text-center">Finished</Text>
+                                </TouchableOpacity>
+                            ) :
+                                (<></>)}
+
                             <TouchableOpacity
                                 className="bg-green-500 rounded-lg py-2 px-4 w-full mb-4"
                                 onPress={handleSave}
                             >
                                 <Text className="text-white font-bold text-center">Save</Text>
                             </TouchableOpacity>
+
+                            <TouchableOpacity
+                                className="bg-red-500 rounded-lg py-2 px-4 w-full mb-4"
+                                onPress={async () => {
+                                    console.log('Removed from list');
+                                    if (selectedCategory === 'watching') {
+                                        await handleRemoveFromWatchlist(selectedMovieOrSeries.movieId || selectedMovieOrSeries.seriesId);
+                                    } else {
+                                        await handleRemoveFromFinishedlist(selectedMovieOrSeries.movieId || selectedMovieOrSeries.seriesId);
+                                    }
+                                    togglePopup(null);
+                                }}
+                            >
+                                <Text className="text-white text-sm text-center">Remove from list</Text>
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => togglePopup(null)}
                                 className="py-2"
                             >
-                                <TouchableOpacity
-                                    onPress={async () => {
-                                        console.log('Removed from list');
-                                        if (selectedCategory === 'watching') {
-                                            await handleRemoveFromWatchlist(selectedMovieOrSeries.movieId || selectedMovieOrSeries.seriesId);
-                                        } else {
-                                            await handleRemoveFromFinishedlist(selectedMovieOrSeries.movieId || selectedMovieOrSeries.seriesId);
-                                        }
-                                        togglePopup(null);
-                                    }}
-                                >
-                                    <Text className="text-red-500 text-sm">Remove from list</Text>
-                                </TouchableOpacity>
-                                <Text className="text-red-500 text-sm">Close</Text>
+                                <Text className="text-red-500 text-sm text-center">Close</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -383,20 +390,22 @@ const list = () => {
     );
 
     return (
-        <View className="flex-1 bg-customBg">
+        <View className={`flex-1 bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""}`}>
             {/* Header */}
-            <View className="flex-row justify-between items-center px-5 py-3">
-                <TouchableOpacity onPress={() => router.push('/')}>
-                    <Image
-                        source={require('../../../assets/images/logo-rerun.png')}
-                        style={{ width: 100, height: 100 }}
-                        resizeMode="contain"
-                    />
-                </TouchableOpacity>
-            </View>
+            {Platform.OS != "web" ? (
+                <View className="flex-row justify-between items-center px-5 pt-3">
+                    <TouchableOpacity onPress={() => router.push('/')}>
+                        <Image
+                            source={require('../../../assets/images/logo-rerun.png')}
+                            style={{ width: 100, height: 100 }}
+                            resizeMode="contain"
+                        />
+                    </TouchableOpacity>
+                </View>
+            ) : (<></>)}
 
             {/* Content Toggle: Movies / Series */}
-            <View className="flex-row justify-center m-5">
+            <View className="flex-row justify-center m-5 mt-0 ">
                 <TouchableOpacity
                     className={`px-5 py-2 mx-2 rounded-lg ${selectedContent === 'movies' ? 'bg-purple-300' : 'bg-transparent'}`}
                     onPress={() => setSelectedContent('movies')}
@@ -412,7 +421,7 @@ const list = () => {
             </View>
 
             {/* Category Tabs: Watching / Finished */}
-            <View className="flex-row justify-center m-5 border-b-2 border-b-slate-500">
+            <View className={`flex-row justify-center m-5 border-b-2 border-b-slate-500 ${Platform.OS === "web" ? "w-2/6 self-center" : ""} `}>
                 <TouchableOpacity
                     className={`px-5 py-2 mx-2 rounded-lg bg-transparent`}
                     onPress={() => setSelectedCategory('watching')}
