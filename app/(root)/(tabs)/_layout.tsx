@@ -1,23 +1,22 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs, useRouter } from "expo-router";
+import { Slot, Tabs, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../../../firebase";
+import { Platform, TouchableOpacity, View, Text, Image } from "react-native";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     // Listen for sign-in / sign-out changes
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setLoading(false);
 
-      // If no user, you can redirect to /login
+      // If no user, redirect to /login
       if (!currentUser) {
         router.replace("/signin");
       }
@@ -26,11 +25,43 @@ export default function TabLayout() {
     return () => unsubscribe(); // Cleanup on unmount
   }, []);
 
-  // Optional: show a loading screen while we check auth
-  if (loading) {
+  if (Platform.OS === "web") {
     return (
-      // Could be a splash or activity indicator
-      <></>
+      <>
+        {/* Navbar */}
+        <View className="flex-row items-center justify-between h-16 bg-black px-7 py-12">
+          {/* Left Section: Logo and Navigation Items */}
+          <View className="flex-row items-center space-x-10">
+            <TouchableOpacity onPress={() => router.push("/")}>
+              <Image
+                source={require("../../../assets/images/logo-rerun.png")}
+                style={{ width: 100, height: 100 }}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/list")}>
+              <FontAwesome name="list" size={36} color="white" />
+              <Text className="text-white">List</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/friends")}>
+              <FontAwesome name="users" size={36} color="white" />
+              <Text className="text-white">Friends</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Right Section: Search Icon */}
+          <TouchableOpacity className="flex items-center" onPress={() => router.push("/user")}>
+
+            <FontAwesome name="user" size={36} color="white" />
+            <Text className="text-white">User</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Page Content */}
+        <View className="flex-1">
+          <Slot />
+        </View>
+      </>
     );
   }
 

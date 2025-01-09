@@ -113,50 +113,66 @@ export default function Index() {
 
   return (
 
-    <ScrollView className="bg-customBg">
+    <ScrollView className={`bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""
+      }`}>
       <StatusBar hidden={true} />
 
-      <View className="flex-row justify-between items-center px-5 py-3">
-        <TouchableOpacity onPress={() => setSearchActive(false)} >
-          <Image
-            source={require('../../../assets/images/logo-rerun.png')}
-            style={{ width: 100, height: 100 }}
-            resizeMode="contain" />
-        </TouchableOpacity>
-        <FontAwesome className="text-right m-3" color={"white"} size={28} name="search" onPress={performSearch} />
-      </View>
+      {Platform.OS != "web" ? (
+        <View className="flex-row justify-between items-center px-5 py-3">
+          <TouchableOpacity onPress={() => setSearchActive(false)} >
+            <Image
+              source={require('../../../assets/images/logo-rerun.png')}
+              style={{ width: 100, height: 100 }}
+              resizeMode="contain" />
+          </TouchableOpacity>
+          <FontAwesome className="text-right m-3" color={"white"} size={28} name="search" onPress={performSearch} />
+        </View>
+
+      ) : (<>
+        <TextInput
+          className="bg-transparent text-white mx-3 p-1 text-base mb-10 mt-5 border-b-2 border-zinc-500 xl:text-3xl lg:text-2xl md:text-xl sm:text-base xl:-p3 lg:p-2 md:p-1 sm:p-1"
+          value={searchInput}
+          placeholder="Search..."
+          placeholderTextColor="#9CA3AF"
+          onChangeText={(text) => {
+            handleSearchInputChange(text)
+            performSearch();
+          }} />
+      </>)}
       {!searchActive && (
         <>
           <View className="mb-5">
-            <Text className="font-bold text-2xl m-3 w-90% border-b-2 border-b-white text-white">Highest Rated Movies</Text>
+            <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl 3xl:mb-8 mb-0" : "text-2xl"}`}>Highest Rated Movies</Text>
             <MovieCards movies={recommendedMovies} />
           </View>
 
           <View className="mb-5">
-            <Text className="font-bold text-2xl m-3 w-90% border-b-2 border-b-white text-white">Highest Rated Series</Text>
+            <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Highest Rated Series</Text>
             <MovieCards movies={mostWatchedMovies} />
           </View>
 
           <View className="mb-5">
-            <Text className="font-bold text-2xl m-3 w-90% border-b-2 border-b-white text-white">Trending Movies This Week</Text>
+            <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Movies This Week</Text>
             <MovieCards movies={trendingMovies} />
           </View>
 
           <View className="mb-5">
-            <Text className="font-bold text-2xl m-3 w-90% border-b-2 border-b-white text-white">Trending Series This Week</Text>
+            <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Series This Week</Text>
             <MovieCards movies={trendingSeries} />
           </View>
         </>
       )}
       {searchActive && (
-        <>
-          <TextInput
-            className="bg-transparent text-white text-xl rounded-lg pb-0 mx-3 mb-10 border-b-2 border-zinc-500"
-            value={searchInput}
-            placeholder="Search..."
-            placeholderTextColor="#9CA3AF"
-            onChangeText={handleSearchInputChange} />
-          <Text className="font-bold text-2xl m-3 w-90% border-b-2 border-b-white text-white">Results for "{searchInput}"</Text>
+        Platform.OS != "web" ? (
+          <>
+            <TextInput
+              className="bg-transparent text-white text-xl rounded-lg pb-0 mx-3 mb-10 border-b-2 border-zinc-500"
+              value={searchInput}
+              placeholder="Search..."
+              placeholderTextColor="#9CA3AF"
+              onChangeText={handleSearchInputChange} />
+          </>) : <>
+          <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white ${Platform.OS === "web" ? "xl:text-5xl lg:text-4xl md:text-3xl sm:text-2xl mb-8" : "text-2xl"}`}>Results for "{searchInput}"</Text>
           <MovieCards movies={searchResults} />
           <TouchableOpacity onPress={() => {
             const nextPage = searchPage + 1;
@@ -164,7 +180,6 @@ export default function Index() {
             searchMovies(searchInput, nextPage);
           }}><Text className="text-white text-center font-bold">Next Page</Text></TouchableOpacity>
         </>
-
       )}
     </ScrollView>
 
