@@ -56,7 +56,7 @@ type Season = {
     season_number: number
 }
 
-
+// Trailer api: https://api.themoviedb.org/3/movie/389/videos?api_key=4dfdd77affe188954f92111d9496afbd
 const Movie = () => {
     const { id, type } = useLocalSearchParams();
     const [data, setData] = useState<MovieOrSeries | null>(null);

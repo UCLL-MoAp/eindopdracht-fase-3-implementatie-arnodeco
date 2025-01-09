@@ -1,4 +1,4 @@
-import { View, Text, Image, Pressable } from 'react-native'
+import { View, Text, Image, Pressable, Platform } from 'react-native'
 import React from 'react'
 import { router } from 'expo-router'
 import { FontAwesome } from '@expo/vector-icons'
@@ -22,7 +22,7 @@ const MovieCard = ({ movie }) => {
             pathname: '/movies/[id]',
             params: { id: movie.id, type: type },
         })}>
-            <View style={{ borderRadius: 7, overflow: 'hidden' }} className="relative h-96 w-64 m-2 flex flex-wrap rounded-lg">
+            <View style={{ borderRadius: 7, overflow: 'hidden' }} className={`relative m-2 flex flex-wrap rounded-lg  ${Platform.OS === "web" ? "3xl:h-168 3xl:w-112 h-96 w-64 m-9" : "h-96 w-64"}`}>
                 <Image
                     //Image width/size (w300 in the uri) is smaller for performance gains
                     source={{

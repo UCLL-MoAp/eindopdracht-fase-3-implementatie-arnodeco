@@ -8,7 +8,16 @@ module.exports = {
         customBg: "#0E1124",
         custom2: "#913a41",
         customPurple: "#271C2E"
-      }
+      },
+      spacing: {
+        112: "28rem",
+        168: "42rem",
+      },
+      screens: {
+        '3xl': '1920px',
+        '4xl': '2560px',
+        '5xl': '3840px',
+      },
     },
   },
   plugins: [],
