@@ -14,11 +14,11 @@ import {
 } from 'firebase/firestore';
 
 export interface RatingData {
-    userId: string;
     movieId: string;
     movieTitle: string;
     rating: number;
-    posterUrl: string;
+    userName: string;
+    avatarName: string,
     timestamp?: string;
 }
 
@@ -27,12 +27,12 @@ export async function addRating(userId: string, movieData: {
     movieId: string;
     movieTitle: string;
     rating: number;
-    posterUrl: string;
+    userName: string;
+    avatarName: string
 }) {
     const ratingDoc = doc(db, 'users', userId, 'ratings', movieData.movieId);
     await setDoc(ratingDoc, {
         ...movieData,
-        userId,
         timestamp: serverTimestamp(),
     });
 }
@@ -63,7 +63,7 @@ export async function getFriendsRatings(friendIds: string[]): Promise<RatingData
     if (friendIds.length === 0) return [];
 
     const ratings: RatingData[] = [];
-    
+
     // Get ratings for each friend
     for (const friendId of friendIds) {
         const ratingsRef = collection(db, 'users', friendId, 'ratings');
@@ -71,9 +71,9 @@ export async function getFriendsRatings(friendIds: string[]): Promise<RatingData
             ratingsRef,
             orderBy('timestamp', 'desc')
         );
-        
+
         const snapshot = await getDocs(q);
-        
+
         snapshot.forEach((doc) => {
             const data = doc.data();
             const timestamp = data.timestamp instanceof Timestamp

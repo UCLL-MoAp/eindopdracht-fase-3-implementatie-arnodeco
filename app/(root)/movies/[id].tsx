@@ -266,7 +266,7 @@ const Movie = () => {
             <ScrollView className={`bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""
                 }`} contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}>
                 {/* Header Logo */}
-                <View className="flex-row justify-start py-3">
+                <View className="flex-row justify-start py-3 px-5">
                     <TouchableOpacity onPress={() => router.push('/')} >
                         <Image
                             source={require('../../../assets/images/logo-rerun.png')}

@@ -8,6 +8,7 @@ import { auth } from '@/firebase';
 import { addToFinishedlist, getFinishedlist, removeFromFinishedlist, updateRating } from '@/app/api/finishedListService';
 import { getSeriesWatchlist, removeFromSeriesWatchlist, updateSeriesProgress } from '@/app/api/seriesWatchListService';
 import { addToSeriesFinishedlist, getSeriesFinishedlist, removeFromSeriesFinishedlist, updateSeriesRating } from '@/app/api/seriesFinishedListService';
+import { addRating } from '@/app/api/ratingsService';
 
 const list = () => {
     const [selectedContent, setSelectedContent] = useState('movies');
@@ -141,7 +142,7 @@ const list = () => {
         }
     };
 
-    const handleUpdateRating = async (itemId: string, rating: number) => {
+    const handleUpdateRating = async (itemId: string, rating: number, itemTitle: string) => {
         try {
             if (selectedContent === 'movies') {
                 await updateRating(user?.uid!, itemId, rating)
@@ -149,6 +150,13 @@ const list = () => {
             else {
                 await updateSeriesRating(user?.uid!, itemId, rating);
             }
+            await addRating(user?.uid!, {
+                movieId: itemId,
+                movieTitle: itemTitle,
+                rating: rating,
+                userName: user?.displayName!,
+                avatarName: user?.photoURL!
+            })
             loadLists()
         } catch (error) {
             console.error('Error updating rating:', error)
@@ -170,7 +178,7 @@ const list = () => {
             if (selectedCategory === 'watching') {
                 await handleUpdateProgress(selectedMovieOrSeries.movieId || selectedMovieOrSeries.seriesId, selectedMovieOrSeries.progress || 0);
             } else {
-                await handleUpdateRating(selectedMovieOrSeries.movieId || selectedMovieOrSeries.seriesId, currentRating);
+                await handleUpdateRating(selectedMovieOrSeries.movieId || selectedMovieOrSeries.seriesId, currentRating, selectedMovieOrSeries.movieTitle || selectedMovieOrSeries.seriesTitle);
             }
             togglePopup(null);
         }
