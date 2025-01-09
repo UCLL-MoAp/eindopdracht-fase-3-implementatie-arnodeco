@@ -170,6 +170,13 @@ export default function Index() {
               placeholder="Search..."
               placeholderTextColor="#9CA3AF"
               onChangeText={handleSearchInputChange} />
+            <MovieCards movies={searchResults} />
+            <TouchableOpacity onPress={() => {
+              const nextPage = searchPage + 1;
+              setSearchPage(nextPage);
+              searchMovies(searchInput, nextPage);
+            }}><Text className="text-white text-center font-bold">Next Page</Text></TouchableOpacity>
+
           </>) : <>
           <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white ${Platform.OS === "web" ? "xl:text-5xl lg:text-4xl md:text-3xl sm:text-2xl mb-8" : "text-2xl"}`}>Results for "{searchInput}"</Text>
           <MovieCards movies={searchResults} />

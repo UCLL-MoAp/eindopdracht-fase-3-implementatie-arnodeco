@@ -222,8 +222,10 @@ const Movie = () => {
             try {
                 await addToSeriesWatchlist(user!.uid, seriesToAdd);
                 console.log("Added movie to list:", seriesToAdd.seriesTitle)
+                Platform.OS === 'web' ? window.alert(`Added ${seriesToAdd.seriesTitle} to watchlist`) : Alert.alert("Succes", `Added ${seriesToAdd.seriesTitle} to watchlist`);
             } catch (error) {
                 console.error('Error adding sample movie:', error);
+                Platform.OS === 'web' ? window.alert(`Adding ${seriesToAdd.seriesTitle} to watchlist failed`) : Alert.alert("Failure", `Adding ${seriesToAdd.seriesTitle} to watchlist failed`);
             }
         }
     }
@@ -266,14 +268,13 @@ const Movie = () => {
             <ScrollView className={`bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""
                 }`} contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}>
                 {/* Header Logo */}
-                <View className="flex-row justify-start py-3 px-5">
-                    <TouchableOpacity onPress={() => router.push('/')} >
-                        <Image
-                            source={require('../../../assets/images/logo-rerun.png')}
-                            style={{ width: 100, height: 100 }}
-                            resizeMode="contain" />
+
+                <View className="flex-row justify-between items-center px-5 py-8">
+                    <TouchableOpacity onPress={() => router.push('/')}>
+                        <FontAwesome name="long-arrow-left" size={40} color={"#EEE"} />
                     </TouchableOpacity>
                 </View>
+
 
                 {/* Movie Poster */}
                 <View className="items-center my-4">
