@@ -22,7 +22,6 @@ import { FontAwesome } from "@expo/vector-icons";
 
 interface Activity {
   id: string;
-  userId: string;
   username: string;
   profilePicture?: string;
   movieTitle: string;
@@ -54,24 +53,20 @@ export default function FriendsScreen() {
 
       const friendsList = await getFriends(currentUser.uid);
       const friendIds = friendsList.map((friend) => friend.userId);
-
       const ratings = await getFriendsRatings(friendIds);
 
       const activitiesWithUsernames = await Promise.all(
         ratings.map(async (rating) => {
-          const userInfo = await getUserInfo(rating.userId);
           return {
             id: rating.movieId,
-            userId: rating.userId,
-            username: userInfo?.username || "Unknown User",
-            profilePicture: userInfo?.profilePicture,
+            profilePicture: rating.avatarName,
+            username: rating?.userName || "Unknown User",
             movieTitle: rating.movieTitle,
             rating: rating.rating,
             timestamp: rating.timestamp || "",
           };
         })
       );
-
       setActivities(activitiesWithUsernames);
     } catch (error) {
       console.error("Error loading friends activity:", error);
@@ -100,6 +95,7 @@ export default function FriendsScreen() {
       if (!currentUser) return;
 
       await addFriend(currentUser.uid, friendId);
+      await addFriend(friendId, currentUser.uid);
       setSearchModalVisible(false);
       loadFriendsActivity();
     } catch (error) {
@@ -119,8 +115,8 @@ export default function FriendsScreen() {
       <Image
         source={
           item.profilePicture
-            ? { uri: getAvatarUrl(item.profilePicture) }
-            : require("../../../assets/images/avatars/default.png")
+            ? getAvatarUrl(item.profilePicture)
+            : getAvatarUrl("default")
         }
         style={{
           width: 50,
@@ -146,7 +142,7 @@ export default function FriendsScreen() {
             marginTop: 4,
           }}
         >
-          rated {item.movieTitle} {item.rating} stars
+          Rated {item.movieTitle} {item.rating} Stars
         </Text>
         <Text
           style={{
@@ -212,7 +208,7 @@ export default function FriendsScreen() {
       <FlatList
         data={activities}
         renderItem={renderActivity}
-        keyExtractor={(item) => `${item.userId}-${item.id}`}
+        keyExtractor={(item) => `${item.id}-${item.id}`}
         style={{
           flex: 1,
         }}
