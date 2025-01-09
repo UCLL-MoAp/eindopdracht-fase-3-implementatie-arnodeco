@@ -41,7 +41,7 @@ const signin = () => {
       Alert.alert("Logged in", `Welcome back ${userCredential.user.email}`);
       router.replace("/");
     } catch (error) {
-      // Alert.alert('Sign-In Error', error.message);
+      Alert.alert("Sign-In Error", "Check your credentials and try again.");
     }
   };
 

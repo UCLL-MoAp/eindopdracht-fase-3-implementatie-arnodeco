@@ -27,7 +27,7 @@ export async function addUserInfo(userId: string, username: string, profilePictu
     await setDoc(userDoc, {
         userId,
         username,
-        profilePicture,
+        pprofilePicture: profilePicture || null,
         timestamp: serverTimestamp(),
     });
 }
