@@ -14,7 +14,7 @@ module.exports = {
         168: "42rem",
       },
       screens: {
-        '3xl': '1920px',
+        '3xl': '1921px',
         '4xl': '2560px',
         '5xl': '3840px',
       },
