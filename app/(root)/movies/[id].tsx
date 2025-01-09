@@ -199,8 +199,10 @@ const Movie = () => {
             try {
                 await addToWatchlist(user!.uid, movieToAdd);
                 console.log("Added movie to list:", movieToAdd.movieTitle)
+                Platform.OS === 'web' ? window.alert(`Added ${movieToAdd.movieTitle} to watchlist`) : Alert.alert("Succes", `Added ${movieToAdd.movieTitle} to watchlist`);
             } catch (error) {
                 console.error('Error adding sample movie:', error);
+                Platform.OS === 'web' ? window.alert(`Adding ${movieToAdd.movieTitle} to watchlist failed`) : Alert.alert("Failure", `Adding ${movieToAdd.movieTitle} to watchlist failed`);
             }
         }
         else if (type == "tv") {
@@ -261,7 +263,8 @@ const Movie = () => {
 
     return (
         <SafeAreaProvider>
-            <ScrollView className="flex-1 bg-customBg px-4" contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}>
+            <ScrollView className={`bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""
+                }`} contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}>
                 {/* Header Logo */}
                 <View className="flex-row justify-start py-3">
                     <TouchableOpacity onPress={() => router.push('/')} >
@@ -274,31 +277,36 @@ const Movie = () => {
 
                 {/* Movie Poster */}
                 <View className="items-center my-4">
+                    {/* Image Container */}
                     <View
                         style={{
                             width: posterWidth,
                             aspectRatio: posterAspectRatio,
                         }}
+                        className={`relative ${Platform.OS === "web" ? "max-w-[300px] xl:max-w-[300px]" : ""}`}
                     >
+                        {/* Movie Poster */}
                         <Image
+                            className="w-full h-full object-cover rounded-lg"
                             source={{
                                 uri: data?.poster_path
                                     ? `https://image.tmdb.org/t/p/w500${data?.poster_path}`
                                     : 'https://via.placeholder.com/400?text=No_Poster',
                             }}
                             style={{
-                                width: '100%',
-                                height: '100%',
                                 borderRadius: 12,
-                                resizeMode: 'cover',
                             }}
                         />
-                    </View>
-                    <TouchableOpacity className="absolute bottom-0 bg-black/60 rounded-md px-5 py-5" onPress={handleAddToList}>
-                        <Text className="text-white font-bold text-xs">+ Add to list</Text>
-                    </TouchableOpacity>
-                </View>
 
+                        {/* Add to List Button */}
+                        <TouchableOpacity
+                            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 rounded-md px-5 py-3"
+                            onPress={handleAddToList}
+                        >
+                            <Text className="text-white font-bold text-xs">+ Add to list</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
                 {/* Title */}
                 <View className="items-center mb-2">
                     <Text className="text-white text-2xl font-bold">{data?.title}</Text>
@@ -318,7 +326,8 @@ const Movie = () => {
                 </View>
 
                 {/* Overview */}
-                <View className="px-4 my-4">
+                <View className={`px-4 my-4 ${Platform.OS === "web" ? "lg:px-20 xl:px-32 2xl:px-96 3xl:px-132 4xl:px-132" : ""
+                    }`}>
                     <Text className="text-white text-sm text-center">{data?.overview}</Text>
                 </View>
 
