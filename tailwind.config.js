@@ -10,8 +10,8 @@ module.exports = {
         customPurple: "#271C2E"
       },
       spacing: {
-        112: "28rem",
-        168: "42rem",
+        88: "22rem",
+        132: "33rem",
       },
       screens: {
         '3xl': '1921px',

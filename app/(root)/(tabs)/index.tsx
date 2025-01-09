@@ -113,8 +113,7 @@ export default function Index() {
 
   return (
 
-    <ScrollView className={`bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""
-      }`}>
+    <ScrollView className={`bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""}`}>
       <StatusBar hidden={true} />
 
       {Platform.OS != "web" ? (

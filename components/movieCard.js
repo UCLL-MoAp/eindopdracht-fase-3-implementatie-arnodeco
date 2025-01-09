@@ -22,7 +22,7 @@ const MovieCard = ({ movie }) => {
             pathname: '/movies/[id]',
             params: { id: movie.id, type: type },
         })}>
-            <View style={{ borderRadius: 7, overflow: 'hidden' }} className={`relative m-2 flex flex-wrap rounded-lg  ${Platform.OS === "web" ? "3xl:h-168 3xl:w-112 h-96 w-64 m-9" : "h-96 w-64"}`}>
+            <View style={{ borderRadius: 7, overflow: 'hidden' }} className={`relative m-2 flex flex-wrap rounded-lg  ${Platform.OS === "web" ? "3xl:h-132 3xl:w-88 h-96 w-64" : "h-96 w-64"}`}>
                 <Image
                     //Image width/size (w300 in the uri) is smaller for performance gains
                     source={{
@@ -33,7 +33,7 @@ const MovieCard = ({ movie }) => {
                 <Text className="absolute top-0 p-1 bg-white text-black font-bold">{rating} <FontAwesome name="star" /></Text>
                 <Text className="absolute top-0 right-0 p-1 bg-white text-black font-bold">{release_year}</Text>
                 <View style={{ backgroundColor: 'rgba(71, 85, 105, 0.75)' }} className="absolute bottom-0 w-full p-1">
-                    <Text className="text-white font-bold text-center">{movie.title || movie.name}</Text>
+                    <Text className={`text-white font-bold text-center  ${Platform.OS === "web" ? "3xl:text-2xl 2xl:text-xl" : ""}`}>{movie.title || movie.name}</Text>
                 </View>
             </View>
         </Pressable>
