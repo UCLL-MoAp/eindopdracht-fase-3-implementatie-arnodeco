@@ -102,6 +102,26 @@ export async function updateRating(userId: string, movieId: string, newRating: n
     }, { merge: true });
 }
 
+// Update avatar in db when user changes is (so friends activity page avatar stays up to date)
+export async function updateRatingAvatarForAll(userId: string, newAvatar: string) {
+    try {
+        const ratingsCollection = collection(db, 'users', userId, 'ratings');
+        const ratingsSnapshot = await getDocs(ratingsCollection);
+
+        const updatePromises = ratingsSnapshot.docs.map((docSnapshot) => {
+            const ratingDoc = doc(db, 'users', userId, 'ratings', docSnapshot.id);
+            return setDoc(ratingDoc, { avatarName: newAvatar }, { merge: true });
+        });
+
+        // updates run concurrently -> more efficient
+        await Promise.all(updatePromises);
+
+        console.log(`Successfully updated avatarName to ${newAvatar} for all ratings of user ${userId}`);
+    } catch (error) {
+        console.error("Error updating avatarName for ratings:", error);
+    }
+}
+
 // Delete a rating
 export async function deleteRating(userId: string, movieId: string) {
     const ratingDoc = doc(db, 'users', userId, 'ratings', movieId);

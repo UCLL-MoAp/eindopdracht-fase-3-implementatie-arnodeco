@@ -21,6 +21,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { auth } from "../../../firebase";
 import { updateProfile, signOut } from "firebase/auth";
 import { updateUserInfo, getAvatarUrl } from "@/app/api/userInfoService";
+import { updateRatingAvatarForAll } from "@/app/api/ratingsService";
 
 const user = () => {
   const user = auth.currentUser;
@@ -73,6 +74,9 @@ const user = () => {
 
       // First update Firestore
       await updateUserInfo(currentUser.uid, avatarName, displayNameInput);
+
+      // Then update avatar in ratings db 
+      await updateRatingAvatarForAll(currentUser.uid, avatarName)
 
       // Then update Firebase Auth profile
       await updateProfile(currentUser, {
@@ -254,9 +258,8 @@ const user = () => {
             Display Name
           </Text>
           <TextInput
-            className={`bg-transparent ${
-              isEditable ? "text-white" : "text-zinc-500"
-            } text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500`}
+            className={`bg-transparent ${isEditable ? "text-white" : "text-zinc-500"
+              } text-xl rounded-lg pb-0 mb-2 border-b-2 border-zinc-500`}
             editable={isEditable}
             value={displayNameInput}
             onChangeText={setDisplayNameInput}
