@@ -246,6 +246,7 @@ export default function FriendsScreen() {
                 borderRadius: 20,
                 paddingHorizontal: 16,
                 marginRight: 8,
+                color: "black",
               }}
               placeholder="Search users..."
               value={searchQuery}
