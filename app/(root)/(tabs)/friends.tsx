@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   ImageSourcePropType,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { auth } from "@/firebase";
 import { getFriends, addFriend } from "@/app/api/friendsService";
@@ -20,7 +21,7 @@ import {
   getAvatarUrl,
 } from "@/app/api/userInfoService";
 import { FontAwesome } from "@expo/vector-icons";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 
 interface Activity {
   id: string;
@@ -44,6 +45,7 @@ export default function FriendsScreen() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
@@ -190,13 +192,24 @@ export default function FriendsScreen() {
         backgroundColor: "#1a1b2e",
       }}
     >
+      {Platform.OS != "web" ? (
+        <View className="flex-row justify-between items-center px-5 pt-3">
+          <TouchableOpacity onPress={() => router.push('/')}>
+            <Image
+              source={require('../../../assets/images/logo-rerun.png')}
+              style={{ width: 100, height: 100 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
+      ) : (<></>)}
       <View
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
           padding: 16,
-          marginTop: 60,
+          marginTop: 0,
         }}
       >
         <Text

@@ -14,7 +14,6 @@ const list = () => {
     const [selectedContent, setSelectedContent] = useState('movies');
     const [selectedCategory, setSelectedCategory] = useState('watching');
 
-    const handleSearch = () => { };
     const router = useRouter();
 
     const user = auth.currentUser;
