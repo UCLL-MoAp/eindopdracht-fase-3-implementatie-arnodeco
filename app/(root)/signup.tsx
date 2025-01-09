@@ -34,7 +34,11 @@ const signup = () => {
 
       // Update the user's displayName
       await updateProfile(user, { displayName: username });
-      await addUserInfo(user.uid, username);
+      try {
+        await addUserInfo(user.uid, username);
+      } catch (error) {
+        //Alert.alert("Sign-Up Error", "Failed to add user info.");
+      }
 
       Alert.alert(
         "User created",
@@ -42,7 +46,7 @@ const signup = () => {
       );
       router.push("/signin");
     } catch (error) {
-      // Alert.alert('Sign-Up Error', error.message);
+      //Alert.alert("Sign-Up Error");
     }
   };
 
