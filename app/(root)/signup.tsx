@@ -10,10 +10,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import React, { useState } from "react";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase";
 import { useRouter } from "expo-router";
 
@@ -31,6 +28,12 @@ const signup = () => {
         email,
         password
       );
+
+      const user = userCredential.user;
+
+      // Update the user's displayName
+      await updateProfile(user, { displayName: username });
+
       Alert.alert(
         "User created",
         `User created with email: ${userCredential.user.email}`
@@ -43,7 +46,7 @@ const signup = () => {
 
   return (
     <ImageBackground
-      source={require("../../assets/images/background.png")} 
+      source={require("../../assets/images/background.png")}
       style={{ flex: 1, width: "100%", height: "100%" }}
       resizeMode="cover"
       className="flex-1 justify-center items-center"
