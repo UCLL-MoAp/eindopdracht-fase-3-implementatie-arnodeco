@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Image,
   ActivityIndicator,
   ImageSourcePropType,
+  RefreshControl,
 } from "react-native";
 import { auth } from "@/firebase";
 import { getFriends, addFriend } from "@/app/api/friendsService";
@@ -19,6 +20,7 @@ import {
   getAvatarUrl,
 } from "@/app/api/userInfoService";
 import { FontAwesome } from "@expo/vector-icons";
+import { useFocusEffect } from "expo-router";
 
 interface Activity {
   id: string;
@@ -41,10 +43,18 @@ export default function FriendsScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadFriendsActivity();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadFriendsActivity()
+    }, [])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadFriendsActivity();
+  };
 
   const loadFriendsActivity = async () => {
     try {
@@ -72,6 +82,7 @@ export default function FriendsScreen() {
       console.error("Error loading friends activity:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -212,6 +223,8 @@ export default function FriendsScreen() {
         style={{
           flex: 1,
         }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
 
       <Modal
