@@ -8,6 +8,7 @@ import {
   Image,
   ImageBackground,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import React, { useState } from "react";
 import {
@@ -47,20 +48,17 @@ const signin = () => {
 
   return (
     <ImageBackground
-      source={require("../../assets/images/background.png")} // Replace with your image path
+      source={require("../../assets/images/background.png")}
       style={{ flex: 1, width: "100%", height: "100%" }}
       resizeMode="cover"
       className="flex-1 justify-center items-center"
     >
       <SafeAreaView className="flex-1 w-full items-center">
-        {/* Header Section */}
-
         <Image
-          source={require("../../assets/images/logo-rerun.png")} // Update the path as per your folder structure
+          source={require("../../assets/images/logo-rerun.png")}
           style={{ width: 250, height: 160, marginBottom: 40, marginTop: 80 }}
           resizeMode="contain"
         />
-
         {/* Form Section */}
         <View className="w-4/5">
           {/* Email Input */}
@@ -86,7 +84,7 @@ const signin = () => {
           />
 
           {/* Forgot Password */}
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/forgotpassword")}>
             <Text className="text-customPurple text-m font-semibold text-center mt-4 mb-4">
               Forgot Password?
             </Text>

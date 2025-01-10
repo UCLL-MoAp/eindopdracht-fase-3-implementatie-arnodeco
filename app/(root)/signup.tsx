@@ -14,6 +14,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase";
 import { useRouter } from "expo-router";
 import { addUserInfo } from "../api/userInfoService";
+import { ChevronLeft } from "lucide-react-native";
 
 const signup = () => {
   const [name, setName] = useState("");
@@ -57,12 +58,17 @@ const signup = () => {
       resizeMode="cover"
       className="flex-1 justify-center items-center"
     >
+      <View className="absolute left-5 top-16 z-10">
+        <TouchableOpacity onPress={() => router.back()}>
+          <ChevronLeft color="black" size={32} />
+        </TouchableOpacity>
+      </View>
       <SafeAreaView className="flex-1 w-full items-center">
         {/* Header Section */}
 
         <Image
           source={require("../../assets/images/logo-rerun.png")}
-          style={{ width: 190, height: 160, marginTop: 80 }}
+          style={{ width: 190, height: 160, marginTop: 60 }}
           resizeMode="contain"
         />
 
