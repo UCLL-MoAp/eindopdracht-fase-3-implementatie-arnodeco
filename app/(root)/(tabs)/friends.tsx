@@ -232,7 +232,7 @@ export default function FriendsScreen() {
       <FlatList
         data={activities}
         renderItem={renderActivity}
-        keyExtractor={(item) => `${item.id}-${item.id}`}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         style={{
           flex: 1,
         }}

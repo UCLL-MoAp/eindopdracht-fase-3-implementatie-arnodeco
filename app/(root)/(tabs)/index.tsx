@@ -116,6 +116,11 @@ export default function Index() {
     <ScrollView className={`bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""}`}>
       <StatusBar hidden={true} />
 
+      <Text className="font-mplusBold text-3xl">Bold and Default Text</Text>
+      <Text style={{ fontSize: 18 }}>
+        Inline Font Test
+      </Text>
+
       {Platform.OS != "web" ? (
         <View className="flex-row justify-between items-center px-5 py-3">
           <TouchableOpacity onPress={() => setSearchActive(false)} >
