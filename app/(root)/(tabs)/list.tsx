@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, FlatList, Modal, Platform } from 'react-native'
+import { View, Text, Image, TouchableOpacity, FlatList, Modal, Platform, ActivityIndicator } from 'react-native'
 import Slider from '@react-native-community/slider';
 import React, { useCallback, useEffect, useState } from 'react'
 import { FontAwesome } from '@expo/vector-icons';
@@ -31,9 +31,12 @@ const list = () => {
 
     const [selectedMovieOrSeries, setSelectedMovieOrSeries] = useState<any | null>(null);
 
+    const [loading, setLoading] = useState<boolean>(true);
+
 
     const loadLists = async () => {
         try {
+            setLoading(true)
             if (selectedContent === 'movies') {
                 const movieWatchlist = await getWatchlist(user?.uid!);
                 const movieFinishedList = await getFinishedlist(user?.uid!);
@@ -47,6 +50,9 @@ const list = () => {
             }
         } catch (error) {
             console.error('Error loading lists:', error);
+        }
+        finally {
+            setLoading(false)
         }
     };
 
@@ -185,6 +191,7 @@ const list = () => {
     };
 
     const renderMovieOrSeriesItem = ({ item }: { item: any }) => (
+
         <View className={`flex-row my-3 ${Platform.OS === "web" ? "m-56 4xl:w-2/6 mx-auto" : ""}`}>
 
             <Image
@@ -445,15 +452,21 @@ const list = () => {
             </View>
 
             {/* List */}
-            <FlatList
-                data={displayedList}
-                renderItem={renderMovieOrSeriesItem}
-                keyExtractor={(item) => (item.movieId || item.seriesId).toString()}
-                contentContainerStyle={{ paddingHorizontal: 16 }}
-                ListEmptyComponent={
-                    <CustomText className="text-center text-gray-400 mt-5">No items in this category.</CustomText>
-                }
-            />
+            {loading ? (
+                // Show ActivityIndicator when loading
+                <View className="flex-1 justify-center items-center">
+                    <ActivityIndicator size="large" color="#0000ff" />
+                </View>
+            ) : (
+                <FlatList
+                    data={displayedList}
+                    renderItem={renderMovieOrSeriesItem}
+                    keyExtractor={(item) => (item.movieId || item.seriesId).toString()}
+                    contentContainerStyle={{ paddingHorizontal: 16 }}
+                    ListEmptyComponent={
+                        <CustomText className="text-center text-gray-400 mt-5">No items in this category.</CustomText>
+                    }
+                />)}
         </View>
     );
 }

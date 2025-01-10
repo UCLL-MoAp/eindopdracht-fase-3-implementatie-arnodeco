@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StatusBar, Image, Alert, Pressable, Dimensions, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StatusBar, Image, Alert, Pressable, Dimensions, Platform, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
@@ -62,7 +62,7 @@ const Movie = () => {
     const { id, type } = useLocalSearchParams();
     const [data, setData] = useState<MovieOrSeries | null>(null);
     const [providers, setProviders] = useState<ProcessedData | null>(null);
-
+    const [loading, setLoading] = useState<boolean>(true);
     const user = auth.currentUser;
 
     const userCountry = "US"
@@ -76,6 +76,8 @@ const Movie = () => {
     const posterAspectRatio = 2 / 3;
 
     const router = useRouter();
+
+
 
     const extractData = (response: any): MovieOrSeries => {
 
@@ -114,6 +116,7 @@ const Movie = () => {
 
     const fetchMovieOrSerieData = async (type: string, id: string): Promise<void> => {
         try {
+            setLoading(true)
             const response = await fetch(
                 `https://api.themoviedb.org/3/${type}/${id}?api_key=4dfdd77affe188954f92111d9496afbd&language=en-US`
             );
@@ -127,6 +130,9 @@ const Movie = () => {
         } catch (error) {
             console.error(`Error fetching ${type}:`, error);
             Alert.alert('Error', `Unable to fetch ${type}.`);
+        }
+        finally {
+            setLoading(false)
         }
     };
 
@@ -275,78 +281,84 @@ const Movie = () => {
                         <FontAwesome name="long-arrow-left" size={40} color={"#EEE"} />
                     </TouchableOpacity>
                 </View>
-
-
-                {/* Movie Poster */}
-                <View className="items-center my-4">
-                    {/* Image Container */}
-                    <View
-                        style={{
-                            width: posterWidth,
-                            aspectRatio: posterAspectRatio,
-                        }}
-                        className={`relative ${Platform.OS === "web" ? "max-w-[300px] xl:max-w-[300px]" : ""}`}
-                    >
-                        {/* Movie Poster */}
-                        <Image
-                            className="w-full h-full object-cover rounded-lg"
-                            source={{
-                                uri: data?.poster_path
-                                    ? `https://image.tmdb.org/t/p/w500${data?.poster_path}`
-                                    : 'https://via.placeholder.com/400?text=No_Poster',
-                            }}
-                            style={{
-                                borderRadius: 12,
-                            }}
-                        />
-
-                        {/* Add to List Button */}
-                        <TouchableOpacity
-                            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 rounded-md px-5 py-3"
-                            onPress={handleAddToList}
-                        >
-                            <CustomText className="text-white text-xs">+ Add to list</CustomText>
-                        </TouchableOpacity>
+                {loading ? (
+                    <View className="flex-1 justify-center items-center">
+                        <ActivityIndicator size="large" color="#0000ff" />
                     </View>
-                </View>
-                {/* Title */}
-                <View className="items-center mb-2">
-                    <CustomText className="text-white text-2xl">{data?.title}</CustomText>
-                    <CustomText className="text-gray-400 text-sm">{`${data?.release_date} • ${data?.runtime}`}</CustomText>
-                </View>
+                ) : (
 
-                {/* Genres */}
-                <View className="flex-row justify-center my-2">
-                    <View className="flex-row justify-center my-2 flex-wrap">
-                        {data?.genres &&
-                            data.genres.map((genre, index) => (
-                                <View key={genre.id || index} className="bg-white/10 px-3 py-1 rounded-full mx-1 my-1">
-                                    <CustomText className="text-white text-xs">{genre.name}</CustomText>
-                                </View>
-                            ))}
-                    </View>
-                </View>
+                    <>
+                        <View className="items-center my-4">
 
-                {/* Overview */}
-                <View className={`px-4 my-4 ${Platform.OS === "web" ? "lg:px-20 xl:px-32 2xl:px-96 3xl:px-132 4xl:px-132" : ""
-                    }`}>
-                    <CustomText className="text-white text-sm text-center">{data?.overview}</CustomText>
-                </View>
+                            {/* Image Container */}
+                            <View
+                                style={{
+                                    width: posterWidth,
+                                    aspectRatio: posterAspectRatio,
+                                }}
+                                className={`relative ${Platform.OS === "web" ? "max-w-[300px] xl:max-w-[300px]" : ""}`}
+                            >
+                                {/* Movie Poster */}
+                                <Image
+                                    className="w-full h-full object-cover rounded-lg"
+                                    source={{
+                                        uri: data?.poster_path
+                                            ? `https://image.tmdb.org/t/p/w500${data?.poster_path}`
+                                            : 'https://via.placeholder.com/400?text=No_Poster',
+                                    }}
+                                    style={{
+                                        borderRadius: 12,
+                                    }}
+                                />
 
-                {/* Rating */}
-                <View className="items-center my-4">
-                    <View className="flex-row justify-center mb-2">
-                        {[...Array(10)].map((_, index) => (
-                            <FontAwesome
-                                key={index}
-                                name={index < Math.floor(data?.vote_average || 0) ? 'star' : 'star-o'}
-                                size={24}
-                                color="gold"
-                            />
-                        ))}
-                    </View>
-                    <CustomText className="text-gray-400 text-sm">{data?.vote_count} Reviews</CustomText>
-                </View>
+                                {/* Add to List Button */}
+                                <TouchableOpacity
+                                    className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 rounded-md px-5 py-3"
+                                    onPress={handleAddToList}
+                                >
+                                    <CustomText className="text-white text-xs">+ Add to list</CustomText>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        {/* Title */}
+                        <View className="items-center mb-2">
+                            <CustomText className="text-white text-2xl">{data?.title}</CustomText>
+                            <CustomText className="text-gray-400 text-sm">{`${data?.release_date} • ${data?.runtime}`}</CustomText>
+                        </View>
+
+                        {/* Genres */}
+                        <View className="flex-row justify-center my-2">
+                            <View className="flex-row justify-center my-2 flex-wrap">
+                                {data?.genres &&
+                                    data.genres.map((genre, index) => (
+                                        <View key={genre.id || index} className="bg-white/10 px-3 py-1 rounded-full mx-1 my-1">
+                                            <CustomText className="text-white text-xs">{genre.name}</CustomText>
+                                        </View>
+                                    ))}
+                            </View>
+                        </View>
+
+                        {/* Overview */}
+                        <View className={`px-4 my-4 ${Platform.OS === "web" ? "lg:px-20 xl:px-32 2xl:px-96 3xl:px-132 4xl:px-132" : ""
+                            }`}>
+                            <CustomText className="text-white text-sm text-center">{data?.overview}</CustomText>
+                        </View>
+
+                        {/* Rating */}
+                        <View className="items-center my-4">
+                            <View className="flex-row justify-center mb-2">
+                                {[...Array(10)].map((_, index) => (
+                                    <FontAwesome
+                                        key={index}
+                                        name={index < Math.floor(data?.vote_average || 0) ? 'star' : 'star-o'}
+                                        size={24}
+                                        color="gold"
+                                    />
+                                ))}
+                            </View>
+                            <CustomText className="text-gray-400 text-sm">{data?.vote_count} Reviews</CustomText>
+                        </View>
+                    </>)}
 
                 {/* Providers */}
                 {providers ? (

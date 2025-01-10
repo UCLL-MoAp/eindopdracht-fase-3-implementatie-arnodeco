@@ -1,7 +1,7 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { ScrollView, Text, View, Image, Platform, Alert, TextInput, TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, Image, Platform, Alert, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import MovieCards from "../../../components/movieCards";
 import MovieCard from "../../../components/movieCard";
 
@@ -113,83 +113,95 @@ export default function Index() {
 
 
   return (
-
     <ScrollView className={`bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""}`}>
       <StatusBar hidden={true} />
 
-      {Platform.OS != "web" ? (
-        <View className="flex-row justify-between items-center px-5 py-3">
-          <TouchableOpacity onPress={() => setSearchActive(false)} >
-            <Image
-              source={require('../../../assets/images/logo-rerun.png')}
-              style={{ width: 100, height: 100 }}
-              resizeMode="contain" />
-          </TouchableOpacity>
-          <FontAwesome className="text-right m-3" color={"white"} size={28} name="search" onPress={performSearch} />
+      {loading ? (
+        <View className="flex-1 justify-center items-center mt-80">
+          <ActivityIndicator size="large" color="#0000ff" />
         </View>
-
-      ) : (<>
-        <TextInput
-          className="bg-transparent text-white mx-3 p-1 text-base mb-10 mt-5 border-b-2 border-zinc-500 xl:text-3xl lg:text-2xl md:text-xl sm:text-base xl:-p3 lg:p-2 md:p-1 sm:p-1"
-          value={searchInput}
-          placeholder="Search..."
-          placeholderTextColor="#9CA3AF"
-          onChangeText={(text) => {
-            handleSearchInputChange(text)
-            performSearch();
-          }} />
-      </>)}
-      {!searchActive && (
+      ) : (
         <>
-          <View className="mb-5">
-            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl 3xl:mb-8 mb-0" : "text-2xl"}`}>Highest Rated Movies</CustomText>
-            <MovieCards movies={recommendedMovies} />
-          </View>
+          {Platform.OS != "web" ? (
+            <View className="flex-row justify-between items-center px-5 py-3">
+              <TouchableOpacity onPress={() => setSearchActive(false)}>
+                <Image
+                  source={require("../../../assets/images/logo-rerun.png")}
+                  style={{ width: 100, height: 100 }}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+              <FontAwesome className="text-right m-3" color={"white"} size={28} name="search" onPress={performSearch} />
+            </View>
+          ) : (
+            <>
+              <TextInput
+                className="bg-transparent text-white mx-3 p-1 text-base mb-10 mt-5 border-b-2 border-zinc-500 xl:text-3xl lg:text-2xl md:text-xl sm:text-base xl:-p3 lg:p-2 md:p-1 sm:p-1"
+                value={searchInput}
+                placeholder="Search..."
+                placeholderTextColor="#9CA3AF"
+                onChangeText={(text) => {
+                  handleSearchInputChange(text);
+                  performSearch();
+                }}
+              />
+            </>
+          )}
+          {!searchActive && (
+            <>
+              <View className="mb-5">
+                <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl 3xl:mb-8 mb-0" : "text-2xl"}`}>Highest Rated Movies</CustomText>
+                <MovieCards movies={recommendedMovies} />
+              </View>
 
-          <View className="mb-5">
-            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Highest Rated Series</CustomText>
-            <MovieCards movies={mostWatchedMovies} />
-          </View>
+              <View className="mb-5">
+                <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Highest Rated Series</CustomText>
+                <MovieCards movies={mostWatchedMovies} />
+              </View>
 
-          <View className="mb-5">
-            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Movies This Week</CustomText>
-            <MovieCards movies={trendingMovies} />
-          </View>
+              <View className="mb-5">
+                <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Movies This Week</CustomText>
+                <MovieCards movies={trendingMovies} />
+              </View>
 
-          <View className="mb-5">
-            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Series This Week</CustomText>
-            <MovieCards movies={trendingSeries} />
-          </View>
-        </>
-      )}
-      {searchActive && (
-        Platform.OS != "web" ? (
-          <>
-            <TextInput
-              className="bg-transparent text-white text-xl rounded-lg pb-0 mx-3 mb-10 border-b-2 border-zinc-500"
-              value={searchInput}
-              placeholder="Search..."
-              placeholderTextColor="#9CA3AF"
-              onChangeText={handleSearchInputChange} />
-            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl"}`}>Results for "{searchInput}"</CustomText>
-            <MovieCards movies={searchResults} />
-            <TouchableOpacity onPress={() => {
-              const nextPage = searchPage + 1;
-              setSearchPage(nextPage);
-              searchMovies(searchInput, nextPage);
-            }}><CustomText className="text-white text-center">Next Page</CustomText></TouchableOpacity>
-
-          </>) : <>
-          <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white ${Platform.OS === "web" ? "xl:text-5xl lg:text-4xl md:text-3xl sm:text-2xl mb-8" : "text-2xl"}`}>Results for "{searchInput}"</CustomText>
-          <MovieCards movies={searchResults} />
-          <TouchableOpacity onPress={() => {
-            const nextPage = searchPage + 1;
-            setSearchPage(nextPage);
-            searchMovies(searchInput, nextPage);
-          }}><Text className="text-white text-center font-bold">Next Page</Text></TouchableOpacity>
+              <View className="mb-5">
+                <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Series This Week</CustomText>
+                <MovieCards movies={trendingSeries} />
+              </View>
+            </>
+          )}
+          {searchActive && (
+            Platform.OS != "web" ? (
+              <>
+                <TextInput
+                  className="bg-transparent text-white text-xl rounded-lg pb-0 mx-3 mb-10 border-b-2 border-zinc-500"
+                  value={searchInput}
+                  placeholder="Search..."
+                  placeholderTextColor="#9CA3AF"
+                  onChangeText={handleSearchInputChange}
+                />
+                <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl"}`}>Results for "{searchInput}"</CustomText>
+                <MovieCards movies={searchResults} />
+                <TouchableOpacity onPress={() => {
+                  const nextPage = searchPage + 1;
+                  setSearchPage(nextPage);
+                  searchMovies(searchInput, nextPage);
+                }}><CustomText className="text-white text-center">Next Page</CustomText></TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white ${Platform.OS === "web" ? "xl:text-5xl lg:text-4xl md:text-3xl sm:text-2xl mb-8" : "text-2xl"}`}>Results for "{searchInput}"</CustomText>
+                <MovieCards movies={searchResults} />
+                <TouchableOpacity onPress={() => {
+                  const nextPage = searchPage + 1;
+                  setSearchPage(nextPage);
+                  searchMovies(searchInput, nextPage);
+                }}><Text className="text-white text-center font-bold">Next Page</Text></TouchableOpacity>
+              </>
+            )
+          )}
         </>
       )}
     </ScrollView>
-
   );
-}
+}  
