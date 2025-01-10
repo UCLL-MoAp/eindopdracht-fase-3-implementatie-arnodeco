@@ -132,12 +132,16 @@ export default function FriendsScreen() {
         style={avatarStyleWeb}
       />
       <View className="flex-1">
-        <CustomText className="text-base text-white">{item.username}</CustomText>
+        <CustomText className="text-base text-white">
+          {item.username}
+        </CustomText>
         <Text className="text-m text-white mt-1">
-          Rated <CustomText >{item.movieTitle}</CustomText>{" "}
-          <CustomText className="text-yellow-500">{item.rating} Stars</CustomText>
+          Rated <CustomText>{item.movieTitle}</CustomText>{" "}
+          <CustomText className="text-yellow-500">
+            {item.rating} Stars
+          </CustomText>
         </Text>
-        <CustomText className="text-sm text-gray-500 mt-1">{item.timestamp}</CustomText>
+        <Text className="text-sm text-gray-500 mt-1">{item.timestamp}</Text>
       </View>
     </View>
   );
@@ -166,8 +170,9 @@ export default function FriendsScreen() {
         <></>
       )}
       <View
-        className={`flex-1 bg-[#1a1b2e] ${Platform.OS === "web" ? "px-10 sm:px-20 md:px-40 lg:px-72" : ""
-          }`}
+        className={`flex-1 bg-[#1a1b2e] ${
+          Platform.OS === "web" ? "px-10 sm:px-20 md:px-40 lg:px-72" : ""
+        }`}
       >
         <View className="flex-row justify-between items-center p-4 mt-0 border-b-2 border-b-white">
           <CustomText className="text-2xl text-white">
@@ -187,7 +192,8 @@ export default function FriendsScreen() {
           keyExtractor={(item, index) => `${item.id}-${index}`}
           className="flex-1"
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
 
         <Modal
@@ -196,8 +202,9 @@ export default function FriendsScreen() {
           transparent={true}
         >
           <View
-            className={`flex-1 ${Platform.OS === "web" ? "px-10 sm:px-20 md:px-40 lg:px-72" : ""
-              }`}
+            className={`flex-1 ${
+              Platform.OS === "web" ? "px-10 sm:px-20 md:px-40 lg:px-72" : ""
+            }`}
           >
             <View className="flex-1 bg-white mt-[175px]">
               <View className="flex-row p-4 border-b border-gray-200">
