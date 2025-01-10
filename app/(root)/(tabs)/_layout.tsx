@@ -93,7 +93,11 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
+            <Image
+              source={require("../../../assets/images/rerun_small.png")}
+              className="w-8 h-8"
+              resizeMode="contain"
+            />
           ),
         }}
       />
@@ -122,7 +126,7 @@ export default function TabLayout() {
           tabBarIcon: ({ }) => (
             <Image
               source={getAvatarUrl(avatarName)}
-              className="w-10 h-10 rounded-full"
+              className="w-9 h-9 rounded-full"
               resizeMode="contain"
             />
           ),
