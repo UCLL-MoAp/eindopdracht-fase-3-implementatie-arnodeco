@@ -425,6 +425,7 @@ const Settings = () => {
                   style={{ flex: 1 }}
                   javaScriptEnabled={true}
                   domStorageEnabled={true}
+                  mediaPlaybackRequiresUserAction={false}
                 />
               )}
             </View>
