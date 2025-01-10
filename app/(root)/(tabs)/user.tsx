@@ -89,6 +89,9 @@ const user = () => {
       setLastSavedAvatarName(avatarName);
       setIsEditable(false);
       setIsVisible(false);
+
+      router.push('../signin')
+      router.push('/user')
     } catch (error) {
       console.error("Error saving profile:", error);
       alert("Failed to save profile. Please try again.");
