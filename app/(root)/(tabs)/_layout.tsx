@@ -5,11 +5,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "../../../firebase";
 import { Platform, TouchableOpacity, View, Text, Image } from "react-native";
+import { getAvatarUrl } from "@/app/api/userInfoService";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+
+  const currentUser = auth.currentUser;
+  const [avatarName, setAvatarName] = useState<string>(
+    currentUser?.photoURL || "default"
+  );
 
   useEffect(() => {
     // Listen for sign-in / sign-out changes
@@ -52,7 +58,12 @@ export default function TabLayout() {
           {/* Right Section: Search Icon */}
           <TouchableOpacity className="flex items-center" onPress={() => router.push("/user")}>
 
-            <FontAwesome name="user" size={36} color="white" />
+            <Image
+              source={getAvatarUrl(avatarName)}
+              style={{ width: 50, height: 50 }}
+              className="rounded-full"
+              resizeMode="contain"
+            />
             <Text className="text-white">User</Text>
           </TouchableOpacity>
         </View>
@@ -108,8 +119,12 @@ export default function TabLayout() {
         name="user"
         options={{
           title: "User",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="user" color={color} />
+          tabBarIcon: ({ }) => (
+            <Image
+              source={getAvatarUrl(avatarName)}
+              className="w-10 h-10 rounded-full"
+              resizeMode="contain"
+            />
           ),
         }}
       />

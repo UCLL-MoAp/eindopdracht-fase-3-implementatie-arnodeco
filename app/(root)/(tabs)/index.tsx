@@ -6,6 +6,7 @@ import MovieCards from "../../../components/movieCards";
 import MovieCard from "../../../components/movieCard";
 
 import * as WebBrowser from 'expo-web-browser';
+import CustomText from "@/components/customText";
 
 
 // tmdb api key: 4dfdd77affe188954f92111d9496afbd
@@ -116,11 +117,6 @@ export default function Index() {
     <ScrollView className={`bg-customBg ${Platform.OS === "web" ? "p-10 lg:px-20 xl:px-32 2xl:px-52 3xl:px-72" : ""}`}>
       <StatusBar hidden={true} />
 
-      <Text className="font-mplusBold text-3xl">Bold and Default Text</Text>
-      <Text style={{ fontSize: 18 }}>
-        Inline Font Test
-      </Text>
-
       {Platform.OS != "web" ? (
         <View className="flex-row justify-between items-center px-5 py-3">
           <TouchableOpacity onPress={() => setSearchActive(false)} >
@@ -146,22 +142,22 @@ export default function Index() {
       {!searchActive && (
         <>
           <View className="mb-5">
-            <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl 3xl:mb-8 mb-0" : "text-2xl"}`}>Highest Rated Movies</Text>
+            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl 3xl:mb-8 mb-0" : "text-2xl"}`}>Highest Rated Movies</CustomText>
             <MovieCards movies={recommendedMovies} />
           </View>
 
           <View className="mb-5">
-            <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Highest Rated Series</Text>
+            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Highest Rated Series</CustomText>
             <MovieCards movies={mostWatchedMovies} />
           </View>
 
           <View className="mb-5">
-            <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Movies This Week</Text>
+            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Movies This Week</CustomText>
             <MovieCards movies={trendingMovies} />
           </View>
 
           <View className="mb-5">
-            <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Series This Week</Text>
+            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl ${Platform.OS === "web" ? "3xl:text-5xl 2xl:text-4xl xl:text-3xl lg:text-2xl mb-8" : "text-2xl"}`}>Trending Series This Week</CustomText>
             <MovieCards movies={trendingSeries} />
           </View>
         </>
@@ -175,15 +171,16 @@ export default function Index() {
               placeholder="Search..."
               placeholderTextColor="#9CA3AF"
               onChangeText={handleSearchInputChange} />
+            <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white text-2xl"}`}>Results for "{searchInput}"</CustomText>
             <MovieCards movies={searchResults} />
             <TouchableOpacity onPress={() => {
               const nextPage = searchPage + 1;
               setSearchPage(nextPage);
               searchMovies(searchInput, nextPage);
-            }}><Text className="text-white text-center font-bold">Next Page</Text></TouchableOpacity>
+            }}><CustomText className="text-white text-center">Next Page</CustomText></TouchableOpacity>
 
           </>) : <>
-          <Text className={`font-bold m-3 w-90% border-b-2 border-b-white text-white ${Platform.OS === "web" ? "xl:text-5xl lg:text-4xl md:text-3xl sm:text-2xl mb-8" : "text-2xl"}`}>Results for "{searchInput}"</Text>
+          <CustomText className={`m-3 w-90% border-b-2 border-b-white text-white ${Platform.OS === "web" ? "xl:text-5xl lg:text-4xl md:text-3xl sm:text-2xl mb-8" : "text-2xl"}`}>Results for "{searchInput}"</CustomText>
           <MovieCards movies={searchResults} />
           <TouchableOpacity onPress={() => {
             const nextPage = searchPage + 1;

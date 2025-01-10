@@ -23,6 +23,7 @@ import {
 } from "@/app/api/userInfoService";
 import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
+import CustomText from "@/components/customText";
 
 interface Activity {
   id: string;
@@ -131,12 +132,12 @@ export default function FriendsScreen() {
         style={avatarStyleWeb}
       />
       <View className="flex-1">
-        <Text className="text-base font-bold text-white">{item.username}</Text>
+        <CustomText className="text-base text-white">{item.username}</CustomText>
         <Text className="text-m text-white mt-1">
-          Rated <Text className="font-bold">{item.movieTitle}</Text>{" "}
-          <Text className="text-yellow-500">{item.rating} Stars</Text>
+          Rated <CustomText >{item.movieTitle}</CustomText>{" "}
+          <CustomText className="text-yellow-500">{item.rating} Stars</CustomText>
         </Text>
-        <Text className="text-sm text-gray-500 mt-1">{item.timestamp}</Text>
+        <CustomText className="text-sm text-gray-500 mt-1">{item.timestamp}</CustomText>
       </View>
     </View>
   );
@@ -169,9 +170,9 @@ export default function FriendsScreen() {
           }`}
       >
         <View className="flex-row justify-between items-center p-4 mt-0 border-b-2 border-b-white">
-          <Text className="text-2xl font-bold text-white">
+          <CustomText className="text-2xl text-white">
             Friends recent activity
-          </Text>
+          </CustomText>
           <TouchableOpacity
             onPress={() => setSearchModalVisible(true)}
             className="p-2"
@@ -183,7 +184,8 @@ export default function FriendsScreen() {
         <FlatList
           data={activities}
           renderItem={renderActivity}
-          keyExtractor={(item) => `${item.id}-${item.id}`}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          className="flex-1"
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         />
@@ -234,15 +236,15 @@ export default function FriendsScreen() {
                       style={avatarStyleWeb}
                     />
                     <View className="flex-1">
-                      <Text className="text-lg font-semibold">
+                      <CustomText className="text-lg">
                         {item.username}
-                      </Text>
+                      </CustomText>
                     </View>
                     <TouchableOpacity
                       onPress={() => handleAddFriend(item.userId)}
                       className="bg-[#1a1b2e] px-4 py-3 rounded-lg"
                     >
-                      <Text className="text-white font-medium">Add Friend</Text>
+                      <CustomText className="text-white">Add Friend</CustomText>
                     </TouchableOpacity>
                   </View>
                 )}

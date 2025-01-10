@@ -9,6 +9,7 @@ import { addToFinishedlist, getFinishedlist, removeFromFinishedlist, updateRatin
 import { getSeriesWatchlist, removeFromSeriesWatchlist, updateSeriesProgress } from '@/app/api/seriesWatchListService';
 import { addToSeriesFinishedlist, getSeriesFinishedlist, removeFromSeriesFinishedlist, updateSeriesRating } from '@/app/api/seriesFinishedListService';
 import { addRating } from '@/app/api/ratingsService';
+import CustomText from "@/components/customText";
 
 const list = () => {
     const [selectedContent, setSelectedContent] = useState('movies');
@@ -203,15 +204,15 @@ const list = () => {
                     <FontAwesome color={"white"} size={18} name="bars" />
                 </TouchableOpacity>
 
-                <Text className="text-white text-lg font-bold mb-2">{item.movieTitle || item.seriesTitle}</Text>
+                <CustomText className="text-white text-lg mb-2">{item.movieTitle || item.seriesTitle}</CustomText>
 
-                <Text className="text-gray-400 mb-2">
+                <CustomText className="text-gray-400 mb-2">
                     {selectedContent === 'movies' ? (
                         selectedCategory === 'watching' ? (
                             `Progress: ${Math.floor(item.progress / 60)}h ${item.progress % 60}m / ${item.length}`
                         ) : (
                             <View className="items-start mt-1">
-                                <Text className="text-gray-400">{item.length}</Text>
+                                <CustomText className="text-gray-400">{item.length}</CustomText>
                                 <View className="flex-row mt-1">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <FontAwesome
@@ -231,7 +232,7 @@ const list = () => {
                         :
                         (
                             <View className="items-start mt-1">
-                                <Text className="text-gray-400">{item.runtime}</Text>
+                                <CustomText className="text-gray-400">{item.runtime}</CustomText>
                                 <View className="flex-row mt-1">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <FontAwesome
@@ -246,7 +247,7 @@ const list = () => {
                             </View>
                         )
                     )}
-                </Text>
+                </CustomText>
 
                 <View className="absolute bottom-0">
                     <Text className="text-gray-400 text-xs m-1">
@@ -270,7 +271,7 @@ const list = () => {
                 >
                     <View className={`flex-1 bg-black/50 justify-center items-center`}>
                         <View className={`bg-customBg p-4 rounded-lg w-4/5 items-center ${Platform.OS === 'web' ? "w-64" : ""}`}>
-                            <Text className="text-white text-lg font-bold mb-4">{selectedMovieOrSeries.movieTitle || selectedMovieOrSeries.seriesTitle}</Text>
+                            <CustomText className="text-white text-lg mb-4">{selectedMovieOrSeries.movieTitle || selectedMovieOrSeries.seriesTitle}</CustomText>
                             {selectedCategory === 'watching' ? (
                                 selectedContent === 'movies' ? (
                                     <>
@@ -288,14 +289,14 @@ const list = () => {
                                             minimumTrackTintColor="#FFFFFF"
                                             maximumTrackTintColor="#888"
                                         />
-                                        <Text className="text-gray-400 mb-4">{`Progress: ${Math.floor(
+                                        <CustomText className="text-gray-400 mb-4">{`Progress: ${Math.floor(
                                             selectedMovieOrSeries.progress / 60
-                                        )}h ${selectedMovieOrSeries.progress % 60}m / ${selectedMovieOrSeries.length}`}</Text>
+                                        )}h ${selectedMovieOrSeries.progress % 60}m / ${selectedMovieOrSeries.length}`}</CustomText>
 
                                     </>
                                 ) : (
                                     <>
-                                        <Text className="text-white font-bold mb-2">Select a Season:</Text>
+                                        <CustomText className="text-white mb-2">Select a Season:</CustomText>
                                         <View className="flex-row flex-wrap justify-center mb-4">
                                             {selectedMovieOrSeries.episodesPerSeason.map((episodes: number, seasonIndex: number) => (
                                                 <TouchableOpacity
@@ -303,13 +304,13 @@ const list = () => {
                                                     className="bg-gray-700 px-3 py-1 rounded-full mx-1 mb-2"
                                                     onPress={() => setSelectedSeason(seasonIndex + 1)}
                                                 >
-                                                    <Text className="text-white text-sm">Season {seasonIndex + 1}</Text>
+                                                    <CustomText className="text-white text-sm">Season {seasonIndex + 1}</CustomText>
                                                 </TouchableOpacity>
                                             ))}
                                         </View>
                                         {selectedSeason && (
                                             <>
-                                                <Text className="text-white font-bold mb-2">Episodes in Season {selectedSeason}:</Text>
+                                                <CustomText className="text-white mb-2">Episodes in Season {selectedSeason}:</CustomText>
                                                 <View className="flex-row flex-wrap justify-center mb-4">
                                                     {Array.from({ length: selectedMovieOrSeries.episodesPerSeason[selectedSeason - 1] }).map((_, episodeIndex) => (
                                                         <TouchableOpacity
@@ -318,7 +319,7 @@ const list = () => {
                                                                 } px-3 py-1 rounded-full mx-1 mb-2`}
                                                             onPress={() => setSelectedEpisode(episodeIndex + 1)}
                                                         >
-                                                            <Text className="text-white text-sm">Ep {episodeIndex + 1}</Text>
+                                                            <CustomText className="text-white text-sm">Ep {episodeIndex + 1}</CustomText>
                                                         </TouchableOpacity>
                                                     ))}
                                                 </View>
@@ -349,7 +350,7 @@ const list = () => {
                                         togglePopup(null);
                                     }}
                                 >
-                                    <Text className="text-white font-bold text-center">Finished</Text>
+                                    <CustomText className="text-white text-center">Finished</CustomText>
                                 </TouchableOpacity>
                             ) :
                                 (<></>)}
@@ -358,7 +359,7 @@ const list = () => {
                                 className="bg-green-500 rounded-lg py-2 px-4 w-full mb-4"
                                 onPress={handleSave}
                             >
-                                <Text className="text-white font-bold text-center">Save</Text>
+                                <CustomText className="text-white text-center">Save</CustomText>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -373,13 +374,13 @@ const list = () => {
                                     togglePopup(null);
                                 }}
                             >
-                                <Text className="text-white text-sm text-center">Remove from list</Text>
+                                <CustomText className="text-white text-center">Remove from list</CustomText>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => togglePopup(null)}
                                 className="py-2"
                             >
-                                <Text className="text-red-500 text-sm text-center">Close</Text>
+                                <CustomText className="text-red-500 text-center">Close</CustomText>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -409,13 +410,13 @@ const list = () => {
                     className={`px-5 py-2 mx-2 rounded-lg ${selectedContent === 'movies' ? 'bg-purple-300' : 'bg-transparent'}`}
                     onPress={() => setSelectedContent('movies')}
                 >
-                    <Text className="text-white text-xl font-bold">Movies</Text>
+                    <CustomText className="text-white text-xl">Movies</CustomText>
                 </TouchableOpacity>
                 <TouchableOpacity
                     className={`px-5 py-2 mx-2 rounded-lg ${selectedContent === 'series' ? 'bg-purple-300' : 'bg-transparent'}`}
                     onPress={() => setSelectedContent('series')}
                 >
-                    <Text className="text-white text-xl font-bold">Series</Text>
+                    <CustomText className="text-white text-xl">Series</CustomText>
                 </TouchableOpacity>
             </View>
 
@@ -425,21 +426,21 @@ const list = () => {
                     className={`px-5 py-2 mx-2 rounded-lg bg-transparent`}
                     onPress={() => setSelectedCategory('watching')}
                 >
-                    <Text
-                        className={`text-white text-xl px-2 font-bold ${selectedCategory === 'watching' ? 'border-b-2 border-b-purple-300' : 'border-b-0'}`}
+                    <CustomText
+                        className={`text-white text-xl px-2 ${selectedCategory === 'watching' ? 'border-b-2 border-b-purple-300' : 'border-b-0'}`}
                     >
                         Watching
-                    </Text>
+                    </CustomText>
                 </TouchableOpacity>
                 <TouchableOpacity
                     className={`px-5 py-2 mx-2 rounded-lg bg-transparent`}
                     onPress={() => setSelectedCategory('finished')}
                 >
-                    <Text
-                        className={`text-white text-xl px-2 font-bold ${selectedCategory === 'finished' ? 'border-b-2 border-b-purple-300' : 'border-b-0'}`}
+                    <CustomText
+                        className={`text-white text-xl px-2 ${selectedCategory === 'finished' ? 'border-b-2 border-b-purple-300' : 'border-b-0'}`}
                     >
                         Finished
-                    </Text>
+                    </CustomText>
                 </TouchableOpacity>
             </View>
 
@@ -450,7 +451,7 @@ const list = () => {
                 keyExtractor={(item) => (item.movieId || item.seriesId).toString()}
                 contentContainerStyle={{ paddingHorizontal: 16 }}
                 ListEmptyComponent={
-                    <Text className="text-center text-gray-400 mt-5">No items in this category.</Text>
+                    <CustomText className="text-center text-gray-400 mt-5">No items in this category.</CustomText>
                 }
             />
         </View>

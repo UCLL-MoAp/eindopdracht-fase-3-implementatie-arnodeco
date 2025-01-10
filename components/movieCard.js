@@ -2,6 +2,7 @@ import { View, Text, Image, Pressable, Platform } from 'react-native'
 import React from 'react'
 import { router } from 'expo-router'
 import { FontAwesome } from '@expo/vector-icons'
+import CustomText from "@/components/customText";
 
 const MovieCard = ({ movie }) => {
     const rating = Number(movie.vote_average.toFixed(1));
@@ -30,10 +31,10 @@ const MovieCard = ({ movie }) => {
                     }}
                     className="w-full h-full"
                 />
-                <Text className="absolute top-0 p-1 bg-white text-black font-bold">{rating} <FontAwesome name="star" /></Text>
-                <Text className="absolute top-0 right-0 p-1 bg-white text-black font-bold">{release_year}</Text>
+                <CustomText className="absolute top-0 p-1 bg-white text-black">{rating} <FontAwesome name="star" /></CustomText>
+                <CustomText className="absolute top-0 right-0 p-1 bg-white text-black">{release_year}</CustomText>
                 <View style={{ backgroundColor: 'rgba(71, 85, 105, 0.75)' }} className="absolute bottom-0 w-full p-1">
-                    <Text className={`text-white font-bold text-center  ${Platform.OS === "web" ? "3xl:text-2xl 2xl:text-xl" : ""}`}>{movie.title || movie.name}</Text>
+                    <CustomText className={`text-white text-center  ${Platform.OS === "web" ? "3xl:text-2xl 2xl:text-xl" : ""}`}>{movie.title || movie.name}</CustomText>
                 </View>
             </View>
         </Pressable>

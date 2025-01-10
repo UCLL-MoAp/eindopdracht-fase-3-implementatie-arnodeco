@@ -8,6 +8,7 @@ import MovieCard from '@/components/movieCard';
 import { addToWatchlist } from '@/app/api/watchListService';
 import { auth } from '@/firebase';
 import { addToSeriesWatchlist } from '@/app/api/seriesWatchListService';
+import CustomText from "@/components/customText";
 
 type Genre = {
     id: number;
@@ -137,7 +138,7 @@ const Movie = () => {
             const data = await response.json();
 
             if (!data.results || !data.results.US) {
-                console.error("US data not available in the API response.");
+                console.log("US data not available in the API response.");
             }
 
             const countryData: CountryProviders | undefined = data.results?.[country];
@@ -304,14 +305,14 @@ const Movie = () => {
                             className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 rounded-md px-5 py-3"
                             onPress={handleAddToList}
                         >
-                            <Text className="text-white font-bold text-xs">+ Add to list</Text>
+                            <CustomText className="text-white text-xs">+ Add to list</CustomText>
                         </TouchableOpacity>
                     </View>
                 </View>
                 {/* Title */}
                 <View className="items-center mb-2">
-                    <Text className="text-white text-2xl font-bold">{data?.title}</Text>
-                    <Text className="text-gray-400 text-sm">{`${data?.release_date} • ${data?.runtime}`}</Text>
+                    <CustomText className="text-white text-2xl">{data?.title}</CustomText>
+                    <CustomText className="text-gray-400 text-sm">{`${data?.release_date} • ${data?.runtime}`}</CustomText>
                 </View>
 
                 {/* Genres */}
@@ -320,7 +321,7 @@ const Movie = () => {
                         {data?.genres &&
                             data.genres.map((genre, index) => (
                                 <View key={genre.id || index} className="bg-white/10 px-3 py-1 rounded-full mx-1 my-1">
-                                    <Text className="text-white text-xs">{genre.name}</Text>
+                                    <CustomText className="text-white text-xs">{genre.name}</CustomText>
                                 </View>
                             ))}
                     </View>
@@ -329,7 +330,7 @@ const Movie = () => {
                 {/* Overview */}
                 <View className={`px-4 my-4 ${Platform.OS === "web" ? "lg:px-20 xl:px-32 2xl:px-96 3xl:px-132 4xl:px-132" : ""
                     }`}>
-                    <Text className="text-white text-sm text-center">{data?.overview}</Text>
+                    <CustomText className="text-white text-sm text-center">{data?.overview}</CustomText>
                 </View>
 
                 {/* Rating */}
@@ -344,14 +345,14 @@ const Movie = () => {
                             />
                         ))}
                     </View>
-                    <Text className="text-gray-400 text-sm">{data?.vote_count} Reviews</Text>
+                    <CustomText className="text-gray-400 text-sm">{data?.vote_count} Reviews</CustomText>
                 </View>
 
                 {/* Providers */}
                 {providers ? (
                     providers.flatrate.length > 0 ? (
                         <View className="px-4 my-4">
-                            <Text className="text-white text-lg font-bold text-center">Streaming Options for {userCountry}</Text>
+                            <CustomText className="text-white text-lg text-center">Streaming Options for {userCountry}</CustomText>
                             <View className="flex-row flex-wrap justify-center mt-2">
                                 {providers.flatrate.map((provider, index) => (
                                     <View key={index} className="m-2 items-center">
@@ -367,21 +368,21 @@ const Movie = () => {
                         </View>
                     ) : (
                         <View className="px-4 my-4">
-                            <Text className="text-white text-lg font-bold text-center">
+                            <CustomText className="text-white text-lg text-center">
                                 No streaming options available for {userCountry}.
-                            </Text>
+                            </CustomText>
                         </View>
                     )
                 ) : (
                     <View className="px-4 my-4">
-                        <Text className="text-white text-lg font-bold text-center">
+                        <CustomText className="text-white text-lg text-center">
                             Unable to fetch streaming options. Please try again later.
-                        </Text>
+                        </CustomText>
                     </View>
                 )}
 
                 <View>
-                    <Text className="font-bold text-2xl m-3 w-90% border-b-2 border-b-white text-white">Recommendations</Text>
+                    <CustomText className="text-2xl m-3 w-90% border-b-2 border-b-white text-white">Recommendations</CustomText>
                     <MovieCards movies={recommendedMovies} />
                 </View>
             </ScrollView>
