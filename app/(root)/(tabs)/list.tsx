@@ -192,10 +192,10 @@ const list = () => {
 
     const renderMovieOrSeriesItem = ({ item }: { item: any }) => (
 
-        <View className={`flex-row my-3 ${Platform.OS === "web" ? "m-56 4xl:w-2/6 mx-auto" : ""}`}>
+        <View className={`flex-row my-3 ${Platform.OS === "web" ? "m-56 4xl:w-2/6 w-4/6 mx-auto" : ""}`}>
 
             <Image
-                className={`w-32 h-48 border border-white ${Platform.OS === "web" ? "3xl:h-132 3xl:w-88 h-96 w-64" : ""}`}
+                className={`w-32 h-48 border border-white ${Platform.OS === "web" ? "3xl:h-132 3xl:w-88  w-32 h-48" : ""}`}
                 source={{ uri: item.posterUrl }}
                 resizeMode="cover"
             />
