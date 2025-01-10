@@ -11,6 +11,7 @@ import {
   ImageSourcePropType,
   RefreshControl,
   Platform,
+  StyleSheet,
 } from "react-native";
 import { auth } from "@/firebase";
 import { getFriends, addFriend } from "@/app/api/friendsService";
@@ -47,9 +48,11 @@ export default function FriendsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 
+  const avatarStyleWeb = Platform.OS === "web" ? { width: 50, height: 50 } : {};
+
   useFocusEffect(
     useCallback(() => {
-      loadFriendsActivity()
+      loadFriendsActivity();
     }, [])
   );
 
@@ -117,217 +120,138 @@ export default function FriendsScreen() {
   };
 
   const renderActivity = ({ item }: { item: Activity }) => (
-    <View
-      style={{
-        flexDirection: "row",
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: "#2a2b3e",
-      }}
-    >
+    <View className="flex-row p-4 border-b border-[#2a2b3e]">
       <Image
         source={
           item.profilePicture
             ? getAvatarUrl(item.profilePicture)
             : getAvatarUrl("default")
         }
-        style={{
-          width: 50,
-          height: 50,
-          borderRadius: 25,
-          marginRight: 12,
-        }}
+        className="w-[60px] h-[60px] rounded-full mr-5"
+        style={avatarStyleWeb}
       />
-      <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: "bold",
-            color: "#fff",
-          }}
-        >
-          {item.username}
+      <View className="flex-1">
+        <Text className="text-base font-bold text-white">{item.username}</Text>
+        <Text className="text-m text-white mt-1">
+          Rated <Text className="font-bold">{item.movieTitle}</Text>{" "}
+          <Text className="text-yellow-500">{item.rating} Stars</Text>
         </Text>
-        <Text
-          style={{
-            fontSize: 14,
-            color: "#fff",
-            marginTop: 4,
-          }}
-        >
-          Rated {item.movieTitle} {item.rating} Stars
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            color: "#666",
-            marginTop: 4,
-          }}
-        >
-          {item.timestamp}
-        </Text>
+        <Text className="text-sm text-gray-500 mt-1">{item.timestamp}</Text>
       </View>
     </View>
   );
 
   if (loading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#1a1b2e",
-        }}
-      >
+      <View className="flex-1 justify-center items-center bg-[#1a1b2e]">
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#1a1b2e",
-      }}
-    >
+    <View className="flex-1 bg-[#1a1b2e]">
       {Platform.OS != "web" ? (
         <View className="flex-row justify-between items-center px-5 pt-3">
-          <TouchableOpacity onPress={() => router.push('/')}>
+          <TouchableOpacity onPress={() => router.push("/")}>
             <Image
-              source={require('../../../assets/images/logo-rerun.png')}
-              style={{ width: 100, height: 100 }}
+              source={require("../../../assets/images/logo-rerun.png")}
+              className="w-[100px] h-[100px]"
               resizeMode="contain"
             />
           </TouchableOpacity>
         </View>
-      ) : (<></>)}
+      ) : (
+        <></>
+      )}
       <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: 16,
-          marginTop: 0,
-        }}
+        className={`flex-1 bg-[#1a1b2e] ${Platform.OS === "web" ? "px-10 sm:px-20 md:px-40 lg:px-72" : ""
+          }`}
       >
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: "bold",
-            color: "#fff",
-          }}
-        >
-          Friends recent activity
-        </Text>
-        <TouchableOpacity
-          onPress={() => setSearchModalVisible(true)}
-          style={{ padding: 8 }}
-        >
-          <FontAwesome name="search" size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
+        <View className="flex-row justify-between items-center p-4 mt-0 border-b-2 border-b-white">
+          <Text className="text-2xl font-bold text-white">
+            Friends recent activity
+          </Text>
+          <TouchableOpacity
+            onPress={() => setSearchModalVisible(true)}
+            className="p-2"
+          >
+            <FontAwesome name="search" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
 
-      <FlatList
-        data={activities}
-        renderItem={renderActivity}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        style={{
-          flex: 1,
-        }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      />
+        <FlatList
+          data={activities}
+          renderItem={renderActivity}
+          keyExtractor={(item) => `${item.id}-${item.id}`}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        />
 
-      <Modal
-        visible={searchModalVisible}
-        animationType="slide"
-        transparent={true}
-      >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "#fff",
-            marginTop: 85,
-          }}
+        <Modal
+          visible={searchModalVisible}
+          animationType="slide"
+          transparent={true}
         >
           <View
-            style={{
-              flexDirection: "row",
-              padding: 16,
-              borderBottomWidth: 1,
-              borderBottomColor: "#eee",
-            }}
+            className={`flex-1 ${Platform.OS === "web" ? "px-10 sm:px-20 md:px-40 lg:px-72" : ""
+              }`}
           >
-            <TextInput
-              style={{
-                flex: 1,
-                height: 40,
-                backgroundColor: "#f5f5f5",
-                borderRadius: 20,
-                paddingHorizontal: 16,
-                marginRight: 8,
-                color: "black",
-              }}
-              placeholder="Search users..."
-              value={searchQuery}
-              onChangeText={(text) => {
-                setSearchQuery(text);
-                handleSearch(text);
-              }}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setSearchModalVisible(false);
-                setSearchQuery("");
-                setSearchResults([]);
-              }}
-              style={{ padding: 8 }}
-            >
-              <FontAwesome name="close" size={24} color="#000" />
-            </TouchableOpacity>
-          </View>
-
-          <FlatList
-            data={searchResults}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  padding: 16,
-                  borderBottomWidth: 1,
-                  borderBottomColor: "#eee",
-                }}
-                onPress={() => handleAddFriend(item.userId)}
-              >
-                <Image
-                  source={
-                    item.profilePicture
-                      ? getAvatarUrl(item.profilePicture)
-                      : getAvatarUrl("default")
-                  }
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    marginRight: 12,
+            <View className="flex-1 bg-white mt-[175px]">
+              <View className="flex-row p-4 border-b border-gray-200">
+                <TextInput
+                  className="flex-1 h-10 bg-gray-100 rounded-full px-4 mr-2 text-black"
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChangeText={(text) => {
+                    setSearchQuery(text);
+                    handleSearch(text);
                   }}
                 />
-                <Text
-                  style={{
-                    fontSize: 16,
+                <TouchableOpacity
+                  onPress={() => {
+                    setSearchModalVisible(false);
+                    setSearchQuery("");
+                    setSearchResults([]);
                   }}
+                  className="p-2"
                 >
-                  {item.username}
-                </Text>
-              </TouchableOpacity>
-            )}
-            keyExtractor={(item) => item.userId}
-          />
-        </View>
-      </Modal>
+                  <FontAwesome name="close" size={24} color="#000" />
+                </TouchableOpacity>
+              </View>
+
+              <FlatList
+                data={searchResults}
+                renderItem={({ item }) => (
+                  <View className="flex-row items-center p-4 border-b border-gray-200">
+                    <Image
+                      source={
+                        item.profilePicture
+                          ? getAvatarUrl(item.profilePicture)
+                          : getAvatarUrl("default")
+                      }
+                      className="w-14 h-14 rounded-full mr-3"
+                      style={avatarStyleWeb}
+                    />
+                    <View className="flex-1">
+                      <Text className="text-lg font-semibold">
+                        {item.username}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => handleAddFriend(item.userId)}
+                      className="bg-[#1a1b2e] px-4 py-3 rounded-lg"
+                    >
+                      <Text className="text-white font-medium">Add Friend</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                keyExtractor={(item) => item.userId}
+              />
+            </View>
+          </View>
+        </Modal>
+      </View>
     </View>
   );
 }
