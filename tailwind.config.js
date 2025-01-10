@@ -18,6 +18,10 @@ module.exports = {
         '4xl': '2560px',
         '5xl': '3840px',
       },
+      fontFamily: {
+        mplusRegular: ["MPLUSRounded-Regular"],
+        mplusBold: ["MPLUSRounded-Bold"],
+      },
     },
   },
   plugins: [],
